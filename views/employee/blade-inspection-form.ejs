@@ -1,0 +1,245 @@
+<%- include('../partials/header', { title, user }) %>
+
+<div class="page-header">
+  <div>
+    <p class="breadcrumb">
+      <a href="/employee">All Forms</a> /
+      <a href="/employee/forms/<%= form.id %>"><%= form.name %></a>
+    </p>
+    <h1 class="page-title"><%= form.name %></h1>
+    <p class="page-subtitle"><%= mode === 'new' ? 'New Report' : 'Edit Report' %></p>
+  </div>
+</div>
+
+<div class="card bir-form-card">
+  <% if (error) { %>
+    <div class="alert alert-error"><%= error %></div>
+  <% } %>
+
+  <form method="POST"
+        action="<%= mode === 'new' ? '/employee/forms/' + form.id + '/new' : '/employee/submissions/' + submission.id + '/edit' %>"
+        enctype="multipart/form-data"
+        id="bir-form">
+
+    <h2 class="bir-form-title"><%= form.name %></h2>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="site">Site *</label>
+        <select id="site" name="site" class="form-control" required>
+          <option value="">— Select —</option>
+          <% config.sites.forEach(function(s) { %>
+            <option value="<%= s %>" <%= data.site === s ? 'selected' : '' %>><%= s %></option>
+          <% }); %>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="customer">Customer *</label>
+        <select id="customer" name="customer" class="form-control" required>
+          <option value="">— Select —</option>
+          <% config.customers.forEach(function(c) { %>
+            <option value="<%= c %>" <%= data.customer === c ? 'selected' : '' %>><%= c %></option>
+          <% }); %>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="wtg_platform">WTG Platform *</label>
+        <select id="wtg_platform" name="wtg_platform" class="form-control" required>
+          <option value="">— Select —</option>
+          <% config.wtg_platforms.forEach(function(p) { %>
+            <option value="<%= p %>" <%= data.wtg_platform === p ? 'selected' : '' %>><%= p %></option>
+          <% }); %>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="wtg_local_id">WTG Local ID</label>
+        <input type="text" id="wtg_local_id" name="wtg_local_id" class="form-control"
+               value="<%= data.wtg_local_id %>">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="blade_oem">Blade OEM *</label>
+        <select id="blade_oem" name="blade_oem" class="form-control" required>
+          <option value="">— Select —</option>
+          <% config.blade_oems.forEach(function(o) { %>
+            <option value="<%= o %>" <%= data.blade_oem === o ? 'selected' : '' %>><%= o %></option>
+          <% }); %>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="blade_type">Blade Type *</label>
+        <select id="blade_type" name="blade_type" class="form-control" required>
+          <option value="">— Select —</option>
+          <% bladeTypeOptions.forEach(function(t) { %>
+            <option value="<%= t %>" <%= data.blade_type === t ? 'selected' : '' %>><%= t %></option>
+          <% }); %>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="blade_length">Blade Length *</label>
+        <select id="blade_length" name="blade_length" class="form-control" required>
+          <option value="">— Select —</option>
+          <% config.blade_lengths.forEach(function(l) { %>
+            <option value="<%= l %>" <%= data.blade_length === l ? 'selected' : '' %>><%= l %></option>
+          <% }); %>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="blade_designation">Blade Designation *</label>
+        <select id="blade_designation" name="blade_designation" class="form-control" required>
+          <option value="">— Select —</option>
+          <% bladeDesignationOptions.forEach(function(d) { %>
+            <option value="<%= d %>" <%= data.blade_designation === d ? 'selected' : '' %>><%= d %></option>
+          <% }); %>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="blade_serial_number">Blade Serial Number</label>
+        <input type="text" id="blade_serial_number" name="blade_serial_number" class="form-control"
+               value="<%= data.blade_serial_number %>">
+      </div>
+      <div class="form-group">
+        <label for="damage_id">Damage ID</label>
+        <input type="text" id="damage_id" name="damage_id" class="form-control"
+               value="<%= data.damage_id %>">
+      </div>
+    </div>
+
+    <div id="technician-rows" class="technician-rows">
+      <% data.technicians.forEach(function(tech, index) { %>
+        <div class="technician-row" data-index="<%= index %>">
+          <div class="form-group">
+            <label><%= index === 0 ? 'Coastal Composite Technician *' : 'Coastal Composite Technician ' + (index + 1) %></label>
+            <select name="technician_<%= index %>" class="form-control" <%= index === 0 ? 'required' : '' %>>
+              <option value="">— Select —</option>
+              <% config.technicians.forEach(function(t) { %>
+                <option value="<%= t %>" <%= tech === t ? 'selected' : '' %>><%= t %></option>
+              <% }); %>
+            </select>
+          </div>
+          <% if (index >= 2) { %>
+            <button type="button" class="btn btn-outline btn-sm technician-remove">Remove</button>
+          <% } %>
+        </div>
+      <% }); %>
+    </div>
+    <button type="button" id="add-technician-btn" class="btn btn-outline btn-sm" style="margin-bottom:20px">
+      + Add Another Worker
+    </button>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="inspection_date">Inspection Date *</label>
+        <input type="date" id="inspection_date" name="inspection_date" class="form-control"
+               value="<%= data.inspection_date %>" required>
+      </div>
+      <div class="form-group">
+        <label for="report_date">Report Date *</label>
+        <input type="date" id="report_date" name="report_date" class="form-control"
+               value="<%= data.report_date %>" required>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="damage_location_radius">Damage Location Radius</label>
+      <input type="text" id="damage_location_radius" name="damage_location_radius" class="form-control"
+             value="<%= data.damage_location_radius %>" placeholder="e.g. 12m from root">
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="damage_location">Damage Location *</label>
+        <select id="damage_location" name="damage_location" class="form-control" required>
+          <option value="">— Select —</option>
+          <% config.damage_locations.forEach(function(loc) { %>
+            <option value="<%= loc %>" <%= data.damage_location === loc ? 'selected' : '' %>><%= loc %></option>
+          <% }); %>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="damage_description">Damage Description *</label>
+        <select id="damage_description" name="damage_description" class="form-control" required>
+          <option value="">— Select —</option>
+          <% config.damage_descriptions.forEach(function(desc) { %>
+            <option value="<%= desc %>" <%= data.damage_description === desc ? 'selected' : '' %>><%= desc %></option>
+          <% }); %>
+        </select>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <h3 class="bir-section-title">Damage Pictures</h3>
+    <p class="bir-section-hint">Add photos of the damage. Each photo can include an optional description.</p>
+
+    <% if (photos && photos.length > 0) { %>
+      <div class="existing-damage-photos">
+        <% photos.forEach(function(photo) { %>
+          <div class="damage-photo-existing">
+            <img src="/uploads/<%= photo.filename %>" alt="Damage photo" class="bir-photo-thumb">
+            <div class="form-group">
+              <label>Photo Description (optional)</label>
+              <input type="text" name="damage_photo_desc_existing_<%= photo.id %>" class="form-control"
+                     value="<%= photo.description || '' %>" placeholder="Describe this photo...">
+            </div>
+            <label class="checkbox-label">
+              <input type="checkbox" name="remove_damage_photo_<%= photo.id %>" value="1"> Remove this photo
+            </label>
+          </div>
+        <% }); %>
+      </div>
+    <% } %>
+
+    <div id="damage-photo-rows" class="damage-photo-rows">
+      <div class="damage-photo-row">
+        <div class="form-group">
+          <label>Picture</label>
+          <input type="file" name="damage_photo_0" class="form-control" accept="image/*">
+        </div>
+        <div class="form-group">
+          <label>Photo Description (optional)</label>
+          <input type="text" name="damage_photo_desc_0" class="form-control"
+                 placeholder="Describe this photo...">
+        </div>
+      </div>
+    </div>
+    <button type="button" id="add-damage-photo-btn" class="btn btn-outline btn-sm" style="margin-bottom:20px">
+      + Add New Picture
+    </button>
+
+    <hr class="divider">
+
+    <div class="form-group">
+      <label for="customer_email">Customer Email *</label>
+      <input type="email" id="customer_email" name="customer_email" class="form-control"
+             value="<%= customerEmail %>" required>
+      <p class="hint">Report will be emailed here when approved by your manager.</p>
+    </div>
+
+    <div style="display:flex;gap:12px;margin-top:8px">
+      <button type="submit" class="btn btn-primary">
+        <%= mode === 'new' ? 'Submit for Review' : 'Save & Resubmit' %>
+      </button>
+      <a href="/employee/forms/<%= form.id %>" class="btn btn-outline">Cancel</a>
+    </div>
+  </form>
+</div>
+
+<script>
+  window.BIR_CONFIG = <%- JSON.stringify(config) %>;
+</script>
+<script src="/js/blade-inspection-workers.js"></script>
+<script src="/js/blade-inspection-photos.js"></script>
+
+<%- include('../partials/footer') %>

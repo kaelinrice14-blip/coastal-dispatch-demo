@@ -1,0 +1,49 @@
+<%- include('../../partials/header', { title, user }) %>
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Manage Employees</h1>
+    <p class="page-subtitle">Add and edit employees and managers</p>
+  </div>
+  <a href="/manager/users/new" class="btn btn-primary">+ Add Employee</a>
+</div>
+
+<% if (flash) { %>
+  <div class="alert alert-<%= flash.type %>"><%= flash.message %></div>
+<% } %>
+
+<div class="card table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Job Title</th>
+        <th>Role</th>
+        <th>Password</th>
+        <th>Added</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (users.length === 0) { %>
+        <tr><td colspan="7" class="empty-state">No employees yet.</td></tr>
+      <% } %>
+      <% users.forEach(function(u) { %>
+      <tr>
+        <td><strong><%= u.name %></strong></td>
+        <td><%= u.email %></td>
+        <td><%= u.job_title || '—' %></td>
+        <td><span class="badge badge-<%= u.role === 'manager' ? 'approved' : 'pending' %>"><%= u.role %></span></td>
+        <td><code><%= u.manager_visible_password || '—' %></code></td>
+        <td style="font-size:0.8125rem;color:var(--text-muted)"><%= u.created_at ? u.created_at.split(' ')[0] : '—' %></td>
+        <td>
+          <a href="/manager/users/<%= u.id %>/edit" class="btn btn-outline btn-sm">Edit</a>
+        </td>
+      </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</div>
+
+<%- include('../../partials/footer') %>

@@ -1,0 +1,9 @@
+<%- include('partials/header', { title, user: typeof user !== 'undefined' ? user : null }) %>
+
+<div class="card" style="max-width:480px; margin: 48px auto; text-align:center">
+  <h1 class="page-title"><%= title %></h1>
+  <p style="color: var(--text-muted); margin: 16px 0 24px"><%= message %></p>
+  <a href="/" class="btn btn-primary">Go Home</a>
+</div>
+
+<%- include('partials/footer') %>

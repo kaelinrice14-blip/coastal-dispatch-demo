@@ -1,0 +1,64 @@
+<%- include('../partials/header', { title, user }) %>
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Review Submissions</h1>
+    <p class="page-subtitle">Approve or reject submitted forms</p>
+  </div>
+</div>
+
+<% if (flash) { %>
+  <div class="alert alert-<%= flash.type %>"><%= flash.message %></div>
+<% } %>
+
+<div class="filter-tabs">
+  <a href="/manager?status=pending" class="filter-tab <%= filter === 'pending' ? 'active' : '' %>">
+    Pending <span class="count">(<%= counts.pending || 0 %>)</span>
+  </a>
+  <a href="/manager?status=approved" class="filter-tab <%= filter === 'approved' ? 'active' : '' %>">
+    Approved <span class="count">(<%= counts.approved || 0 %>)</span>
+  </a>
+  <a href="/manager?status=rejected" class="filter-tab <%= filter === 'rejected' ? 'active' : '' %>">
+    Rejected <span class="count">(<%= counts.rejected || 0 %>)</span>
+  </a>
+  <a href="/manager?status=all" class="filter-tab <%= filter === 'all' ? 'active' : '' %>">
+    All
+  </a>
+</div>
+
+<% if (submissions.length === 0) { %>
+  <div class="card empty-state">
+    <p>No submissions in this category.</p>
+  </div>
+<% } else { %>
+  <div class="card table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Form</th>
+          <th>Employee</th>
+          <th>Summary</th>
+          <th>Submitted</th>
+          <th>Status</th>
+          <th>Email</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% submissions.forEach(function(s) { %>
+        <tr>
+          <td><%= s.form_name %></td>
+          <td><%= s.employee_name %></td>
+          <td><%= s.summary.title %></td>
+          <td style="font-size:0.8125rem;color:var(--text-muted)"><%= s.created_at %></td>
+          <td><span class="badge badge-<%= s.status %>"><%= s.status %></span></td>
+          <td style="font-size:0.8125rem"><% if (s.email_sent) { %>✓ Sent<% } else { %>—<% } %></td>
+          <td><a href="/manager/submissions/<%= s.id %>" class="btn btn-outline btn-sm">Review</a></td>
+        </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+<% } %>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,159 @@
+<%- include('../partials/header', { title, user }) %>
+
+<div class="page-header chat-page-header">
+  <div>
+    <h1 class="page-title">Company Chat</h1>
+    <p class="page-subtitle">Message your team in real time</p>
+  </div>
+  <% if (user.role === 'manager') { %>
+    <button type="button" class="btn btn-primary btn-sm" id="new-room-btn">+ New Chat Room</button>
+  <% } %>
+</div>
+
+<% if (flash) { %>
+  <div class="alert alert-<%= flash.type %>"><%= flash.message %></div>
+<% } %>
+
+<div class="chat-layout" id="chat-app"
+     data-user-id="<%= user.id %>"
+     data-user-name="<%= user.name %>"
+     data-is-manager="<%= user.role === 'manager' ? '1' : '0' %>"
+     data-active-room="<%= activeRoomId || '' %>">
+
+  <aside class="chat-sidebar card">
+    <h2 class="chat-sidebar-title">Chats</h2>
+    <div class="chat-room-list" id="chat-room-list">
+      <% if (rooms.length === 0) { %>
+        <p class="text-muted chat-empty">No chats yet.<% if (user.role === 'manager') { %> Create one to get started.<% } %></p>
+      <% } %>
+      <% rooms.forEach(function(room) { %>
+        <button type="button" class="chat-room-item <%= activeRoomId === room.id ? 'active' : '' %>"
+                data-room-id="<%= room.id %>">
+          <span class="chat-room-name"><%= room.name %></span>
+          <% if (room.unread_count > 0) { %>
+            <span class="chat-unread-badge"><%= room.unread_count %></span>
+          <% } %>
+          <% if (room.last_message) { %>
+            <span class="chat-room-preview"><%= room.last_message %></span>
+          <% } %>
+        </button>
+      <% }); %>
+    </div>
+  </aside>
+
+  <section class="chat-main card" id="chat-main">
+    <div class="chat-placeholder" id="chat-placeholder" <%= activeRoomId ? 'style="display:none"' : '' %>>
+      <p>Select a chat to start messaging</p>
+    </div>
+
+    <div class="chat-panel" id="chat-panel" <%= !activeRoomId ? 'style="display:none"' : '' %>>
+      <div class="chat-panel-header">
+        <div>
+          <h2 class="chat-panel-title" id="chat-room-title">—</h2>
+          <p class="chat-panel-members" id="chat-room-members"></p>
+        </div>
+        <% if (user.role === 'manager') { %>
+          <div class="chat-manager-actions">
+            <button type="button" class="btn btn-outline btn-sm" id="edit-room-btn">Edit</button>
+            <button type="button" class="btn btn-outline btn-sm" id="manage-members-btn">Members</button>
+          </div>
+        <% } %>
+      </div>
+
+      <div class="chat-tabs">
+        <button type="button" class="chat-tab active" data-tab="messages">Messages</button>
+        <button type="button" class="chat-tab" data-tab="photos">Photos</button>
+        <button type="button" class="chat-tab" data-tab="links">Links</button>
+      </div>
+
+      <div class="chat-tab-panel active" id="tab-messages">
+        <div class="chat-messages" id="chat-messages"></div>
+        <form class="chat-compose" id="chat-compose">
+          <input type="file" id="chat-image-input" accept="image/*" hidden>
+          <button type="button" class="btn btn-outline btn-sm" id="chat-image-btn" title="Send image">📷</button>
+          <input type="text" id="chat-input" class="form-control" placeholder="Type a message..." autocomplete="off">
+          <button type="submit" class="btn btn-primary">Send</button>
+        </form>
+      </div>
+
+      <div class="chat-tab-panel" id="tab-photos">
+        <div class="chat-media-grid" id="chat-photos-grid">
+          <p class="text-muted">No photos shared yet.</p>
+        </div>
+      </div>
+
+      <div class="chat-tab-panel" id="tab-links">
+        <div class="chat-media-grid" id="chat-links-grid">
+          <p class="text-muted">No links shared yet.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<% if (user.role === 'manager') { %>
+<div class="chat-modal-overlay" id="new-room-modal" hidden>
+  <div class="chat-modal card">
+    <h3>Create Chat Room</h3>
+    <form method="POST" action="/chat/rooms">
+      <div class="form-group">
+        <label for="new_room_name">Chat Name *</label>
+        <input type="text" id="new_room_name" name="name" class="form-control" required placeholder="e.g. Site Crew Alpha">
+      </div>
+      <div class="form-group">
+        <label>Add Employees</label>
+        <% employees.filter(e => e.role === 'employee').forEach(function(emp) { %>
+          <label class="checkbox-label chat-member-option">
+            <input type="checkbox" name="members" value="<%= emp.id %>"> <%= emp.name %>
+          </label>
+        <% }); %>
+      </div>
+      <div class="chat-modal-actions">
+        <button type="submit" class="btn btn-primary">Create</button>
+        <button type="button" class="btn btn-outline chat-modal-close">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="chat-modal-overlay" id="edit-room-modal" hidden>
+  <div class="chat-modal card">
+    <h3>Edit Chat Name</h3>
+    <form method="POST" id="edit-room-form">
+      <div class="form-group">
+        <label for="edit_room_name">Chat Name *</label>
+        <input type="text" id="edit_room_name" name="name" class="form-control" required>
+      </div>
+      <div class="chat-modal-actions">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-outline chat-modal-close">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="chat-modal-overlay" id="members-modal" hidden>
+  <div class="chat-modal card">
+    <h3>Manage Members</h3>
+    <div id="current-members-list" class="chat-members-list"></div>
+    <form method="POST" id="add-member-form" class="chat-add-member-form">
+      <div class="form-group">
+        <label for="add_member_select">Add Employee</label>
+        <select id="add_member_select" name="user_id" class="form-control">
+          <option value="">— Select —</option>
+          <% employees.filter(e => e.role === 'employee').forEach(function(emp) { %>
+            <option value="<%= emp.id %>"><%= emp.name %></option>
+          <% }); %>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary btn-sm">Add to Chat</button>
+    </form>
+    <button type="button" class="btn btn-outline chat-modal-close" style="margin-top:16px">Close</button>
+  </div>
+</div>
+<% } %>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/chat.js"></script>
+
+<%- include('../partials/footer') %>

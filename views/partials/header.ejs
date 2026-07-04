@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> — Work Logs</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <% if (typeof user !== 'undefined' && user) { %>
+  <header class="header">
+    <div class="container header-inner">
+      <a href="/" class="logo">
+        <span class="logo-icon">WL</span>
+        Work Logs
+      </a>
+      <nav class="header-nav">
+        <a href="/chat">Chat</a>
+        <% if (user.role === 'employee') { %>
+          <a href="/employee">Forms</a>
+          <a href="/time">Submit Time</a>
+        <% } else { %>
+          <a href="/manager">Form Review</a>
+          <a href="/manager/forms">Manage Forms</a>
+          <a href="/manager/time">Time Approval</a>
+          <a href="/manager/users">Employees</a>
+        <% } %>
+        <span class="user-badge">
+          <%= user.name %>
+          <span class="role-tag"><%= user.role %></span>
+        </span>
+        <form action="/logout" method="POST" style="display:inline">
+          <button type="submit" class="btn btn-outline btn-sm">Sign Out</button>
+        </form>
+      </nav>
+    </div>
+  </header>
+  <% } %>
+  <main class="container">

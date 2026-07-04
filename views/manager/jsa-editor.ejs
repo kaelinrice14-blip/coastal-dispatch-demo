@@ -1,0 +1,91 @@
+<%- include('../partials/header', { title, user }) %>
+
+<div class="page-header">
+  <div>
+    <p class="breadcrumb"><a href="/manager/forms">Manage Forms</a></p>
+    <h1 class="page-title">Edit JSA Form</h1>
+    <p class="page-subtitle">Manage dropdown options — the form layout is fixed</p>
+  </div>
+</div>
+
+<div class="card">
+  <% if (error) { %>
+    <div class="alert alert-error"><%= error %></div>
+  <% } %>
+
+  <form method="POST" action="/manager/forms/<%= form.id %>">
+    <input type="hidden" name="jsa_save" value="1">
+
+    <h2 class="jsa-form-title">JSA</h2>
+    <p class="text-muted" style="margin-bottom:24px">This form has a fixed layout. You can edit dropdown options and settings below.</p>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="customer_email_default">Default Customer Email</label>
+        <input type="email" id="customer_email_default" name="customer_email_default" class="form-control"
+               value="<%= form.customer_email_default || defaultCustomerEmail %>">
+      </div>
+      <div class="form-group">
+        <label class="checkbox-label" style="margin-top:28px">
+          <input type="checkbox" name="is_active" value="1" <%= form.is_active ? 'checked' : '' %>>
+          Form is active (visible to employees)
+        </label>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <h3 class="jsa-section-title">Dropdown Options</h3>
+    <p class="text-muted" style="margin-bottom:20px">One option per line. Employees will see these in the dropdown menus.</p>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="job_sites">Job Site / Wind Farm Options</label>
+        <textarea id="job_sites" name="job_sites" class="form-control option-list" rows="6"><%= config.job_sites.join('\n') %></textarea>
+      </div>
+      <div class="form-group">
+        <label for="customers">Customer Options</label>
+        <textarea id="customers" name="customers" class="form-control option-list" rows="6"><%= config.customers.join('\n') %></textarea>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="potential_hazards">Potential Hazards Options</label>
+        <textarea id="potential_hazards" name="potential_hazards" class="form-control option-list" rows="8"><%= config.potential_hazards.join('\n') %></textarea>
+      </div>
+      <div class="form-group">
+        <label for="hazard_control_measures">Hazard Control Measures Options</label>
+        <textarea id="hazard_control_measures" name="hazard_control_measures" class="form-control option-list" rows="8"><%= config.hazard_control_measures.join('\n') %></textarea>
+      </div>
+    </div>
+
+    <div class="jsa-layout-preview">
+      <h3 class="jsa-section-title">Form Layout (fixed)</h3>
+      <ol class="layout-list">
+        <li><strong>General Information</strong>
+          <ul>
+            <li>Job Site / Wind Farm — Dropdown</li>
+            <li>Date and Time — Date/time picker</li>
+            <li>Customer — Dropdown</li>
+            <li>Tower Number — Text</li>
+            <li>Site Contact — Text</li>
+            <li>Site Contact Phone Number — Text</li>
+            <li>Wind/Weather Forecast — Text</li>
+            <li>Work Scope — Large text box</li>
+          </ul>
+        </li>
+        <li>Potential Hazards — Dropdown (repeatable rows)</li>
+        <li>Hazard Control Measures — Dropdown (repeatable rows)</li>
+        <li><em>Add Another Hazard</em> button for employees</li>
+      </ol>
+    </div>
+
+    <div style="display:flex;gap:12px;margin-top:24px">
+      <button type="submit" class="btn btn-primary">Save Options</button>
+      <a href="/manager/forms" class="btn btn-outline">Cancel</a>
+    </div>
+  </form>
+</div>
+
+<%- include('../partials/footer') %>

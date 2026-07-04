@@ -1,0 +1,90 @@
+<%- include('../../partials/header', { title, user }) %>
+
+<div class="page-header">
+  <div>
+    <p class="breadcrumb"><a href="/manager/time">Time Approval</a></p>
+    <h1 class="page-title">Review Time Entry</h1>
+    <p class="page-subtitle"><%= entry.employee_name %> · <%= entry.entry_date %></p>
+  </div>
+  <span class="badge badge-<%= entry.status %>"><%= entry.status %></span>
+</div>
+
+<% if (error) { %>
+  <div class="alert alert-error"><%= error %></div>
+<% } %>
+
+<div class="card">
+  <div class="detail-grid">
+    <div class="detail-item">
+      <label>Employee</label>
+      <p><%= entry.employee_name %></p>
+    </div>
+    <div class="detail-item">
+      <label>Date</label>
+      <p><%= entry.entry_date %></p>
+    </div>
+    <div class="detail-item">
+      <label>Start / End Time</label>
+      <p><%= entry.start_time %> – <%= entry.end_time %></p>
+    </div>
+    <div class="detail-item">
+      <label>Total Hours</label>
+      <p><strong><%= entry.total_hours %>h</strong></p>
+    </div>
+    <div class="detail-item">
+      <label>Site / Wind Farm</label>
+      <p><%= entry.site %></p>
+    </div>
+    <div class="detail-item">
+      <label>State</label>
+      <p><%= entry.state || '—' %></p>
+    </div>
+    <div class="detail-item">
+      <label>Type of Hours</label>
+      <p><%= entry.hours_type || '—' %></p>
+    </div>
+    <div class="detail-item">
+      <label>Job Type / Form Reference</label>
+      <p><%= entry.job_reference || '—' %></p>
+    </div>
+    <% if (entry.notes) { %>
+    <div class="detail-item">
+      <label>Notes / Description</label>
+      <div class="detail-content"><%= entry.notes %></div>
+    </div>
+    <% } %>
+    <% if (entry.submitted_at) { %>
+    <div class="detail-item">
+      <label>Submitted</label>
+      <p><%= entry.submitted_at %></p>
+    </div>
+    <% } %>
+  </div>
+
+  <% if (entry.status === 'pending') { %>
+  <form method="POST" action="/manager/time/entries/<%= entry.id %>/review">
+    <div class="form-group" style="margin-top:24px">
+      <label for="manager_notes">Comment (optional)</label>
+      <textarea id="manager_notes" name="manager_notes" class="form-control"
+                placeholder="Feedback for the employee..."></textarea>
+    </div>
+    <div class="review-actions">
+      <button type="submit" name="action" value="approve" class="btn btn-success">Approve</button>
+      <button type="submit" name="action" value="reject" class="btn btn-danger">Reject</button>
+      <a href="/manager/time" class="btn btn-outline">Back</a>
+    </div>
+  </form>
+  <% } else { %>
+  <% if (entry.manager_notes) { %>
+  <div class="detail-item" style="margin-top:16px">
+    <label>Manager Comment</label>
+    <div class="detail-content"><%= entry.manager_notes %></div>
+  </div>
+  <% } %>
+  <div class="review-actions">
+    <a href="/manager/time" class="btn btn-outline">Back</a>
+  </div>
+  <% } %>
+</div>
+
+<%- include('../../partials/footer') %>

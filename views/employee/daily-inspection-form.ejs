@@ -1,0 +1,173 @@
+<%- include('../partials/header', { title, user }) %>
+
+<div class="page-header">
+  <div>
+    <p class="breadcrumb">
+      <a href="/employee">All Forms</a> /
+      <a href="/employee/forms/<%= form.id %>"><%= form.name || 'Daily Aerial Inspection' %></a>
+    </p>
+    <h1 class="page-title"><%= form.name || 'Daily Aerial Inspection' %></h1>
+    <p class="page-subtitle"><%= mode === 'new' ? 'Start New Inspection' : 'Edit Inspection' %></p>
+  </div>
+</div>
+
+<div class="card di-form-card">
+  <% if (error) { %>
+    <div class="alert alert-error"><%= error %></div>
+  <% } %>
+
+  <form method="POST"
+        action="<%= mode === 'new' ? '/employee/forms/' + form.id + '/new' : '/employee/submissions/' + submission.id + '/edit' %>"
+        enctype="multipart/form-data"
+        id="di-form">
+
+    <!-- Section 1 -->
+    <h2 class="di-section-title">Section 1: Daily Inspection</h2>
+
+    <div class="form-group">
+      <label for="inspector_name">Inspector's Name *</label>
+      <input type="text" id="inspector_name" name="inspector_name" class="form-control"
+             value="<%= data.inspector_name %>" required>
+    </div>
+
+    <div class="form-group">
+      <label>Date/Time of Inspection *</label>
+      <div class="datetime-wheel-group">
+        <input type="date" id="inspection_date" class="form-control"
+               value="<%= data.inspection_datetime ? data.inspection_datetime.split('T')[0] : '' %>" required>
+        <%- include('../partials/time-wheel-picker', {
+          id: 'inspection_time',
+          name: 'inspection_time',
+          value: data.inspection_datetime && data.inspection_datetime.includes('T') ? data.inspection_datetime.split('T')[1].slice(0,5) : '08:00',
+          required: false
+        }) %>
+        <input type="hidden" name="inspection_datetime" id="inspection_datetime" class="datetime-combined"
+               value="<%= data.inspection_datetime %>" required>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="site">Site *</label>
+        <select id="site" name="site" class="form-control" required>
+          <option value="">— Select —</option>
+          <% config.sites.forEach(function(s) { %>
+            <option value="<%= s %>" <%= data.site === s ? 'selected' : '' %>><%= s %></option>
+          <% }); %>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="tower_number">Tower Number</label>
+        <input type="text" id="tower_number" name="tower_number" class="form-control"
+               value="<%= data.tower_number %>">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="lift_type">Type of Lift *</label>
+      <select id="lift_type" name="lift_type" class="form-control" required>
+        <option value="">— Select —</option>
+        <% config.lift_types.forEach(function(t) { %>
+          <option value="<%= t %>" <%= data.lift_type === t ? 'selected' : '' %>><%= t %></option>
+        <% }); %>
+      </select>
+    </div>
+
+    <!-- Section 2 -->
+    <h2 class="di-section-title">Section 2: Lift Inspection</h2>
+    <p class="di-section-hint">All questions require a Yes or No answer.</p>
+
+    <div class="yn-question-list">
+      <% liftQuestions.forEach(function(q) { %>
+        <div class="yn-question">
+          <span class="yn-label"><%= q.label %></span>
+          <div class="yn-options">
+            <label class="yn-option">
+              <input type="radio" name="lift_<%= q.key %>" value="yes"
+                     <%= data.lift_inspection[q.key] === 'yes' ? 'checked' : '' %> required> Yes
+            </label>
+            <label class="yn-option">
+              <input type="radio" name="lift_<%= q.key %>" value="no"
+                     <%= data.lift_inspection[q.key] === 'no' ? 'checked' : '' %> required> No
+            </label>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+
+    <!-- Section 3 -->
+    <h2 class="di-section-title">Section 3: Driver Side Setup</h2>
+    <% if (photos.driver) { %>
+      <div class="current-photo">
+        <img src="/uploads/<%= photos.driver.filename %>" alt="Driver side">
+        <label><input type="checkbox" name="remove_driver_photo" value="1"> Remove and replace</label>
+      </div>
+    <% } %>
+    <div class="form-group">
+      <label for="driver_side_photo">Photo Upload<%= photos.driver ? '' : ' *' %></label>
+      <input type="file" id="driver_side_photo" name="driver_side_photo" class="form-control"
+             accept="image/*" <%= photos.driver ? '' : 'required' %>>
+    </div>
+
+    <!-- Section 4 -->
+    <h2 class="di-section-title">Section 4: Passenger Side Setup</h2>
+    <% if (photos.passenger) { %>
+      <div class="current-photo">
+        <img src="/uploads/<%= photos.passenger.filename %>" alt="Passenger side">
+        <label><input type="checkbox" name="remove_passenger_photo" value="1"> Remove and replace</label>
+      </div>
+    <% } %>
+    <div class="form-group">
+      <label for="passenger_side_photo">Photo Upload<%= photos.passenger ? '' : ' *' %></label>
+      <input type="file" id="passenger_side_photo" name="passenger_side_photo" class="form-control"
+             accept="image/*" <%= photos.passenger ? '' : 'required' %>>
+    </div>
+
+    <!-- Section 5 -->
+    <h2 class="di-section-title">Section 5: Shutdown Checklist</h2>
+    <p class="di-section-hint">All items must be checked before submitting.</p>
+
+    <div class="shutdown-checklist">
+      <% shutdownItems.forEach(function(item) { %>
+        <label class="checkbox-label shutdown-item">
+          <input type="checkbox" name="shutdown_<%= item.key %>" value="1"
+                 <%= data.shutdown_checklist[item.key] ? 'checked' : '' %> required>
+          <%= item.label %>
+        </label>
+      <% }); %>
+    </div>
+
+    <!-- Section 6 -->
+    <h2 class="di-section-title">Section 6: Acknowledgement</h2>
+
+    <p class="acknowledgement-text"><%= acknowledgementText %></p>
+
+    <div class="form-group">
+      <label>Signature *</label>
+      <div class="signature-pad-wrap">
+        <canvas id="signature-canvas" class="signature-canvas"></canvas>
+        <button type="button" id="clear-signature" class="btn btn-outline btn-sm">Clear Signature</button>
+      </div>
+      <input type="hidden" name="signature" id="signature" value="<%= data.signature %>">
+      <p class="hint">Sign with your finger or stylus.</p>
+    </div>
+
+    <div class="form-group">
+      <label for="customer_email">Customer Email *</label>
+      <input type="email" id="customer_email" name="customer_email" class="form-control"
+             value="<%= customerEmail %>" required>
+      <p class="hint">Inspection report will be emailed here when approved.</p>
+    </div>
+
+    <div style="display:flex;gap:12px;margin-top:8px">
+      <button type="submit" class="btn btn-primary">
+        <%= mode === 'new' ? 'Submit Inspection' : 'Save & Resubmit' %>
+      </button>
+      <a href="/employee/forms/<%= form.id %>" class="btn btn-outline">Cancel</a>
+    </div>
+  </form>
+</div>
+
+<script src="/js/time-wheel-picker.js"></script>
+<script src="/js/signature-pad.js"></script>
+<%- include('../partials/footer') %>

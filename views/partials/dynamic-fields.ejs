@@ -1,0 +1,58 @@
+<% const val = (key) => (typeof values !== 'undefined' && values[key]) ? values[key] : ''; %>
+
+<% fields.forEach(function(field) {
+  const options = field.options_json ? (function() {
+    try { return JSON.parse(field.options_json); } catch(e) { return field.options_json.split(',').map(s => s.trim()); }
+  })() : [];
+%>
+
+<div class="form-group">
+  <label for="<%= field.field_key %>">
+    <%= field.label %><% if (field.required) { %> *<% } %>
+  </label>
+
+  <% if (field.field_type === 'textarea' || field.field_type === 'job_details' || field.field_type === 'site_contacts') { %>
+    <textarea id="<%= field.field_key %>" name="<%= field.field_key %>" class="form-control<%= field.field_type !== 'textarea' ? ' field-section' : '' %>"
+              placeholder="<%= field.placeholder || '' %>"
+              <%= field.required ? 'required' : '' %>><%= val(field.field_key) %></textarea>
+    <% if (field.field_type === 'job_details') { %>
+      <p class="hint">Describe scope, location, equipment, and work performed.</p>
+    <% } else if (field.field_type === 'site_contacts') { %>
+      <p class="hint">Names, roles, and phone numbers for on-site contacts.</p>
+    <% } %>
+
+  <% } else if (field.field_type === 'number') { %>
+    <input type="number" id="<%= field.field_key %>" name="<%= field.field_key %>" class="form-control"
+           step="any" value="<%= val(field.field_key) %>"
+           placeholder="<%= field.placeholder || '' %>"
+           <%= field.required ? 'required' : '' %>>
+
+  <% } else if (field.field_type === 'dropdown') { %>
+    <select id="<%= field.field_key %>" name="<%= field.field_key %>" class="form-control" <%= field.required ? 'required' : '' %>>
+      <option value="">— Select —</option>
+      <% options.forEach(function(opt) { %>
+        <option value="<%= opt %>" <%= val(field.field_key) === opt ? 'selected' : '' %>><%= opt %></option>
+      <% }); %>
+    </select>
+
+  <% } else if (field.field_type === 'photo') { %>
+    <input type="file" id="<%= field.field_key %>" name="<%= field.field_key %>" class="form-control"
+           accept="image/*" multiple>
+    <p class="hint">Images only. Total photos for this form: max <%= form.max_photos %>.</p>
+
+  <% } else if (field.field_type === 'customer_name') { %>
+    <input type="text" id="<%= field.field_key %>" name="<%= field.field_key %>" class="form-control"
+           value="<%= val(field.field_key) %>"
+           placeholder="<%= field.placeholder || 'Customer or client name' %>"
+           <%= field.required ? 'required' : '' %>>
+
+  <% } else { %>
+    <input type="<%= field.field_key.includes('date') ? 'date' : 'text' %>"
+           id="<%= field.field_key %>" name="<%= field.field_key %>" class="form-control"
+           value="<%= val(field.field_key) %>"
+           placeholder="<%= field.placeholder || '' %>"
+           <%= field.required ? 'required' : '' %>>
+  <% } %>
+</div>
+
+<% }); %>

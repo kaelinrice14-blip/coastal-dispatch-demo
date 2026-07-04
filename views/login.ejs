@@ -1,0 +1,32 @@
+<%- include('partials/header', { title, user: null }) %>
+
+<div class="login-page">
+  <div class="card login-card">
+    <h1>Sign In</h1>
+    <p class="subtitle">Submit and review daily work logs</p>
+
+    <% if (error) { %>
+      <div class="alert alert-error"><%= error %></div>
+    <% } %>
+
+    <form method="POST" action="/login">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" class="form-control" required autofocus>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" class="form-control" required>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%">Sign In</button>
+    </form>
+
+    <div class="demo-accounts">
+      <p><strong>Demo accounts</strong></p>
+      <p>Employee: employee@company.com / password123</p>
+      <p>Manager: manager@company.com / password123</p>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

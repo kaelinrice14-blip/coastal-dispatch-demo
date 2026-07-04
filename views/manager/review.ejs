@@ -1,0 +1,54 @@
+<%- include('../partials/header', { title, user }) %>
+
+<div class="page-header">
+  <div>
+    <p class="breadcrumb"><a href="/manager">Review Queue</a></p>
+    <h1 class="page-title"><%= isJsa ? 'Review JSA' : (isDi || isBir || isBrr) ? ('Review ' + submission.form_name) : 'Review Submission' %></h1>
+    <p class="page-subtitle">Submitted by <%= submission.employee_name %></p>
+  </div>
+  <span class="badge badge-<%= submission.status %>"><%= submission.status %></span>
+</div>
+
+<% if (error) { %>
+  <div class="alert alert-error"><%= error %></div>
+<% } %>
+
+<div class="card">
+  <% if (isJsa) { %>
+    <%- include('../partials/jsa-display', { submission, jsaData }) %>
+  <% } else if (isDi) { %>
+    <%- include('../partials/daily-inspection-display', { submission, diData, photos, liftQuestions, shutdownItems, acknowledgementText }) %>
+  <% } else if (isBir) { %>
+    <%- include('../partials/blade-inspection-display', { submission, birData, photos }) %>
+  <% } else if (isBrr) { %>
+    <%- include('../partials/blade-repair-display', { submission, birData, photos, laminationStages: typeof laminationStages !== 'undefined' ? laminationStages : [] }) %>
+  <% } else { %>
+    <%- include('../partials/submission-detail', { submission, values, photos }) %>
+  <% } %>
+
+  <% if (submission.status === 'pending') { %>
+  <form method="POST" action="/manager/submissions/<%= submission.id %>/review">
+    <div class="form-group" style="margin-top:24px">
+      <label for="manager_notes">Manager Notes (optional)</label>
+      <textarea id="manager_notes" name="manager_notes" class="form-control"
+                placeholder="Feedback for the employee..."></textarea>
+    </div>
+
+    <div class="review-actions">
+      <button type="submit" name="action" value="approve" class="btn btn-success">
+        Approve &amp; Send Email
+      </button>
+      <button type="submit" name="action" value="reject" class="btn btn-danger">
+        Reject
+      </button>
+      <a href="/manager" class="btn btn-outline">Back</a>
+    </div>
+  </form>
+  <% } else { %>
+  <div class="review-actions">
+    <a href="/manager" class="btn btn-outline">Back to Queue</a>
+  </div>
+  <% } %>
+</div>
+
+<%- include('../partials/footer') %>

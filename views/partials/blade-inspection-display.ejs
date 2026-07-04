@@ -1,0 +1,91 @@
+<h2 class="bir-form-title"><%= submission.form_name %></h2>
+
+<div class="detail-grid">
+  <div class="detail-item">
+    <label>Site</label>
+    <p><%= birData.site || '—' %></p>
+  </div>
+  <div class="detail-item">
+    <label>Customer</label>
+    <p><%= birData.customer || '—' %></p>
+  </div>
+  <div class="detail-item">
+    <label>WTG Platform</label>
+    <p><%= birData.wtg_platform || '—' %></p>
+  </div>
+  <div class="detail-item">
+    <label>WTG Local ID</label>
+    <p><%= birData.wtg_local_id || '—' %></p>
+  </div>
+  <div class="detail-item">
+    <label>Blade OEM</label>
+    <p><%= birData.blade_oem || '—' %></p>
+  </div>
+  <div class="detail-item">
+    <label>Blade Type</label>
+    <p><%= birData.blade_type || '—' %></p>
+  </div>
+  <div class="detail-item">
+    <label>Blade Length</label>
+    <p><%= birData.blade_length || '—' %></p>
+  </div>
+  <div class="detail-item">
+    <label>Blade Designation</label>
+    <p><%= birData.blade_designation || '—' %></p>
+  </div>
+  <div class="detail-item">
+    <label>Blade Serial Number</label>
+    <p><%= birData.blade_serial_number || '—' %></p>
+  </div>
+  <div class="detail-item">
+    <label>Damage ID</label>
+    <p><%= birData.damage_id || '—' %></p>
+  </div>
+  <div class="detail-item">
+    <label>Inspection Date</label>
+    <p><%= birData.inspection_date || '—' %></p>
+  </div>
+  <div class="detail-item">
+    <label>Report Date</label>
+    <p><%= birData.report_date || '—' %></p>
+  </div>
+  <div class="detail-item">
+    <label>Damage Location Radius</label>
+    <p><%= birData.damage_location_radius || '—' %></p>
+  </div>
+  <div class="detail-item">
+    <label>Damage Location</label>
+    <p><%= birData.damage_location || '—' %></p>
+  </div>
+  <div class="detail-item">
+    <label>Damage Description</label>
+    <p><%= birData.damage_description || '—' %></p>
+  </div>
+</div>
+
+<% if (birData.technicians && birData.technicians.length > 0) { %>
+<h3 class="bir-section-title">Coastal Composite Technicians</h3>
+<ul class="technician-display-list">
+  <% birData.technicians.forEach(function(tech, i) { %>
+    <% if (tech) { %>
+      <li><strong>Technician <%= i + 1 %>:</strong> <%= tech %></li>
+    <% } %>
+  <% }); %>
+</ul>
+<% } %>
+
+<h3 class="bir-section-title">Damage Pictures</h3>
+<% if (photos && photos.length > 0) { %>
+  <div class="bir-photo-gallery">
+    <% photos.forEach(function(photo) { %>
+      <div class="bir-photo-item">
+        <img src="/uploads/<%= photo.filename %>" alt="Damage photo" class="bir-photo">
+        <% if (photo.description) { %>
+          <p class="bir-photo-caption"><%= photo.description %></p>
+        <% } %>
+      </div>
+    <% }); %>
+  </div>
+<% } else { %>
+  <p class="text-muted">No damage pictures uploaded.</p>
+<% } %>

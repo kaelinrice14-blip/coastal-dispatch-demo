@@ -1,0 +1,7 @@
+<div class="time-wheel-picker" data-field="<%= id %>">
+  <input type="hidden"
+         name="<%= name %>"
+         id="<%= id %>"
+         value="<%= typeof value !== 'undefined' ? value : '' %>"
+         <%= typeof required !== 'undefined' && required ? 'required' : '' %>>
+</div>

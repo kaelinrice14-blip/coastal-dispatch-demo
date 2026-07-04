@@ -1,0 +1,54 @@
+<%- include('../partials/header', { title, user }) %>
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Manage Forms</h1>
+    <p class="page-subtitle">Create and customize forms for your team</p>
+  </div>
+</div>
+
+<% if (flash) { %>
+  <div class="alert alert-<%= flash.type %>"><%= flash.message %></div>
+<% } %>
+
+<% if (forms.length === 0) { %>
+  <div class="card empty-state">
+    <p>No forms available.</p>
+  </div>
+<% } else { %>
+  <div class="card table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Form Name</th>
+          <th>Fields</th>
+          <th>Max Photos</th>
+          <th>Submissions</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% forms.forEach(function(f) { %>
+        <tr>
+          <td>
+            <strong><%= f.name %></strong>
+            <% if (f.description) { %><br><span class="text-muted" style="font-size:0.8125rem"><%= f.description %></span><% } %>
+          </td>
+          <td><%= f.field_count %></td>
+          <td><%= f.max_photos %></td>
+          <td><%= f.submission_count %></td>
+          <td><span class="badge <%= f.is_active ? 'badge-approved' : 'badge-rejected' %>"><%= f.is_active ? 'Active' : 'Inactive' %></span></td>
+          <td>
+            <a href="/manager/forms/<%= f.id %>/edit" class="btn btn-outline btn-sm">
+              <%= (f.form_template === 'jsa' || f.form_template === 'daily_inspection' || f.form_template === 'blade_inspection' || f.form_template === 'blade_repair') ? 'Edit Options' : 'Edit' %>
+            </a>
+          </td>
+        </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+<% } %>
+
+<%- include('../partials/footer') %>

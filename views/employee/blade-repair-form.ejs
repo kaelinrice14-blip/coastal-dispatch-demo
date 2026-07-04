@@ -1,0 +1,533 @@
+<%- include('../partials/header', { title, user }) %>
+
+<div class="page-header">
+  <div>
+    <p class="breadcrumb">
+      <a href="/employee">All Forms</a> /
+      <a href="/employee/forms/<%= form.id %>"><%= form.name %></a>
+    </p>
+    <h1 class="page-title"><%= form.name %></h1>
+    <p class="page-subtitle"><%= mode === 'new' ? 'New Report' : 'Edit Report' %></p>
+  </div>
+</div>
+
+<div class="card brr-form-card">
+  <% if (error) { %>
+    <div class="alert alert-error"><%= error %></div>
+  <% } %>
+
+  <form method="POST"
+        action="<%= mode === 'new' ? '/employee/forms/' + form.id + '/new' : '/employee/submissions/' + submission.id + '/edit' %>"
+        enctype="multipart/form-data" id="brr-form">
+
+    <h2 class="brr-form-title"><%= form.name %></h2>
+
+    <!-- Turbine Information -->
+    <section class="brr-section" data-section="turbine_information">
+      <%- include('../partials/brr-section-header', { title: 'Turbine Information', sectionKey: 'turbine_information', data }) %>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="customer">Customer *</label>
+          <select id="customer" name="customer" class="form-control" data-required="true" required>
+            <option value="">— Select —</option>
+            <% config.customers.forEach(function(c) { %>
+              <option value="<%= c %>" <%= data.customer === c ? 'selected' : '' %>><%= c %></option>
+            <% }); %>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="site">Site *</label>
+          <select id="site" name="site" class="form-control" data-required="true" required>
+            <option value="">— Select —</option>
+            <% config.sites.forEach(function(s) { %>
+              <option value="<%= s %>" <%= data.site === s ? 'selected' : '' %>><%= s %></option>
+            <% }); %>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="wtg_platform">WTG Platform *</label>
+          <select id="wtg_platform" name="wtg_platform" class="form-control" data-required="true" required>
+            <option value="">— Select —</option>
+            <% config.wtg_platforms.forEach(function(p) { %>
+              <option value="<%= p %>" <%= data.wtg_platform === p ? 'selected' : '' %>><%= p %></option>
+            <% }); %>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="wtg_local_id">WTG Local ID</label>
+          <input type="text" id="wtg_local_id" name="wtg_local_id" class="form-control" value="<%= data.wtg_local_id %>">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="blade_oem">Blade OEM *</label>
+          <select id="blade_oem" name="blade_oem" class="form-control" data-required="true" required>
+            <option value="">— Select —</option>
+            <% config.blade_oems.forEach(function(o) { %>
+              <option value="<%= o %>" <%= data.blade_oem === o ? 'selected' : '' %>><%= o %></option>
+            <% }); %>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="blade_type">Blade Type *</label>
+          <select id="blade_type" name="blade_type" class="form-control" data-required="true" required>
+            <option value="">— Select —</option>
+            <% config.blade_types.forEach(function(t) { %>
+              <option value="<%= t %>" <%= data.blade_type === t ? 'selected' : '' %>><%= t %></option>
+            <% }); %>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="blade_length">Blade Length *</label>
+          <select id="blade_length" name="blade_length" class="form-control" data-required="true" required>
+            <option value="">— Select —</option>
+            <% config.blade_lengths.forEach(function(l) { %>
+              <option value="<%= l %>" <%= data.blade_length === l ? 'selected' : '' %>><%= l %></option>
+            <% }); %>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="blade_designation">Blade Designation *</label>
+          <select id="blade_designation" name="blade_designation" class="form-control" data-required="true" required>
+            <option value="">— Select —</option>
+            <% bladeDesignationOptions.forEach(function(d) { %>
+              <option value="<%= d %>" <%= data.blade_designation === d ? 'selected' : '' %>><%= d %></option>
+            <% }); %>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="blade_serial_number">Blade Serial Number</label>
+          <input type="text" id="blade_serial_number" name="blade_serial_number" class="form-control" value="<%= data.blade_serial_number %>">
+        </div>
+        <div class="form-group">
+          <label for="damage_id">Damage ID</label>
+          <input type="text" id="damage_id" name="damage_id" class="form-control" value="<%= data.damage_id %>">
+        </div>
+      </div>
+      <div id="technician-rows" class="technician-rows">
+        <% data.technicians.forEach(function(tech, index) { %>
+          <div class="technician-row">
+            <div class="form-group">
+              <label><%= index === 0 ? 'Coastal Composite Technician *' : 'Coastal Composite Technician ' + (index + 1) %></label>
+              <select name="technician_<%= index %>" class="form-control" <%= index === 0 ? 'data-required="true" required' : '' %>>
+                <option value="">— Select —</option>
+                <% config.technicians.forEach(function(t) { %>
+                  <option value="<%= t %>" <%= tech === t ? 'selected' : '' %>><%= t %></option>
+                <% }); %>
+              </select>
+            </div>
+            <% if (index >= 2) { %><button type="button" class="btn btn-outline btn-sm technician-remove">Remove</button><% } %>
+          </div>
+        <% }); %>
+      </div>
+      <button type="button" id="add-technician-btn" class="btn btn-outline btn-sm">+ Add Another Worker</button>
+    </section>
+
+    <hr class="divider">
+
+    <!-- Chemicals Used -->
+    <section class="brr-section" data-section="chemicals_used">
+      <%- include('../partials/brr-section-header', { title: 'Chemicals Used', sectionKey: 'chemicals_used', data }) %>
+      <div id="chemical-rows">
+        <% data.chemicals.forEach(function(chem, index) { %>
+          <div class="chemical-row">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Material Used *</label>
+                <select name="chemical_material_<%= index %>" class="form-control" data-required="true" required>
+                  <option value="">— Select —</option>
+                  <% config.materials_used.forEach(function(m) { %>
+                    <option value="<%= m %>" <%= chem.material_used === m ? 'selected' : '' %>><%= m %></option>
+                  <% }); %>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Batch Number *</label>
+                <input type="text" name="chemical_batch_<%= index %>" class="form-control" value="<%= chem.batch_number %>" data-required="true" required>
+              </div>
+              <div class="form-group">
+                <label>Expiration Date *</label>
+                <input type="date" name="chemical_expiration_<%= index %>" class="form-control" value="<%= chem.expiration_date %>" data-required="true" required>
+              </div>
+            </div>
+            <% if (index > 0) { %><button type="button" class="btn btn-outline btn-sm chemical-remove">Remove</button><% } %>
+          </div>
+        <% }); %>
+      </div>
+      <button type="button" id="add-chemical-btn" class="btn btn-outline btn-sm">+ Add Chemical</button>
+    </section>
+
+    <hr class="divider">
+
+    <!-- Initial Inspection -->
+    <section class="brr-section" data-section="initial_inspection">
+      <%- include('../partials/brr-section-header', { title: 'Initial Inspection', sectionKey: 'initial_inspection', data }) %>
+      <% if (photos.blade_id_tag_photo && photos.blade_id_tag_photo.length) { %>
+        <% photos.blade_id_tag_photo.forEach(function(photo) { %>
+          <div class="existing-photo-block">
+            <img src="/uploads/<%= photo.filename %>" alt="Blade ID Tag" class="brr-photo-thumb">
+            <label class="checkbox-label"><input type="checkbox" name="remove_photo_<%= photo.id %>" value="1"> Remove</label>
+          </div>
+        <% }); %>
+      <% } %>
+      <div class="form-group">
+        <label>Blade ID Tag *</label>
+        <input type="file" name="blade_id_tag" class="form-control" accept="image/*" <%= (!photos.blade_id_tag_photo || !photos.blade_id_tag_photo.length) ? 'data-required="true" required' : '' %>>
+      </div>
+      <div class="form-group">
+        <label>Blade ID Tag Comment *</label>
+        <input type="text" name="blade_id_tag_comment" class="form-control" value="<%= data.blade_id_tag_comment %>" data-required="true" required>
+      </div>
+      <h3 class="brr-subsection-title">Initial Damage</h3>
+      <% if (photos.initial_damage_photos && photos.initial_damage_photos.length) { %>
+        <div class="existing-photo-grid">
+          <% photos.initial_damage_photos.forEach(function(photo) { %>
+            <div class="existing-photo-block">
+              <img src="/uploads/<%= photo.filename %>" alt="Initial damage" class="brr-photo-thumb">
+              <input type="text" name="photo_desc_existing_<%= photo.id %>" class="form-control" value="<%= photo.description || '' %>" placeholder="Photo comment">
+              <label class="checkbox-label"><input type="checkbox" name="remove_photo_<%= photo.id %>" value="1"> Remove</label>
+            </div>
+          <% }); %>
+        </div>
+      <% } %>
+      <div id="initial-damage-rows">
+        <div class="dynamic-photo-row">
+          <div class="form-group">
+            <label>Picture</label>
+            <input type="file" name="initial_damage_0" class="form-control" accept="image/*">
+          </div>
+          <div class="form-group">
+            <label>Comment</label>
+            <input type="text" name="initial_damage_desc_0" class="form-control" placeholder="Describe this photo...">
+          </div>
+        </div>
+      </div>
+      <button type="button" id="add-initial-damage-btn" class="btn btn-outline btn-sm">+ Add Damage Photo</button>
+    </section>
+
+    <hr class="divider">
+
+    <!-- Topcoat Removed -->
+    <section class="brr-section" data-section="topcoat_removed">
+      <%- include('../partials/brr-section-header', { title: 'Topcoat Removed', sectionKey: 'topcoat_removed', data }) %>
+      <% if (photos.topcoat_removed_photo && photos.topcoat_removed_photo.length) { %>
+        <% photos.topcoat_removed_photo.forEach(function(photo) { %>
+          <div class="existing-photo-block">
+            <img src="/uploads/<%= photo.filename %>" alt="Topcoat removed" class="brr-photo-thumb">
+            <label class="checkbox-label"><input type="checkbox" name="remove_photo_<%= photo.id %>" value="1"> Remove</label>
+          </div>
+        <% }); %>
+      <% } %>
+      <div class="form-group">
+        <label>Photo *</label>
+        <input type="file" name="topcoat_removed" class="form-control" accept="image/*" <%= (!photos.topcoat_removed_photo || !photos.topcoat_removed_photo.length) ? 'data-required="true" required' : '' %>>
+      </div>
+      <div class="form-group">
+        <label>Comment *</label>
+        <input type="text" name="topcoat_removed_comment" class="form-control" value="<%= data.topcoat_removed_comment %>" data-required="true" required>
+      </div>
+    </section>
+
+    <hr class="divider">
+
+    <!-- Damage Exposed -->
+    <section class="brr-section" data-section="damage_exposed">
+      <%- include('../partials/brr-section-header', { title: 'Damage Exposed', sectionKey: 'damage_exposed', data }) %>
+      <% if (photos.damage_exposed_photo && photos.damage_exposed_photo.length) { %>
+        <% photos.damage_exposed_photo.forEach(function(photo) { %>
+          <div class="existing-photo-block">
+            <img src="/uploads/<%= photo.filename %>" alt="Damage exposed" class="brr-photo-thumb">
+            <label class="checkbox-label"><input type="checkbox" name="remove_photo_<%= photo.id %>" value="1"> Remove</label>
+          </div>
+        <% }); %>
+      <% } %>
+      <div class="form-group">
+        <label>Photo *</label>
+        <input type="file" name="damage_exposed" class="form-control" accept="image/*" <%= (!photos.damage_exposed_photo || !photos.damage_exposed_photo.length) ? 'data-required="true" required' : '' %>>
+      </div>
+      <div class="form-group">
+        <label>Comment *</label>
+        <input type="text" name="damage_exposed_comment" class="form-control" value="<%= data.damage_exposed_comment %>" data-required="true" required>
+      </div>
+    </section>
+
+    <hr class="divider">
+
+    <!-- Bonding Application -->
+    <section class="brr-section" data-section="bonding_application">
+      <%- include('../partials/brr-section-header', { title: 'Bonding Application', sectionKey: 'bonding_application', data }) %>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Ambient Temperature (°C) *</label>
+          <input type="text" name="bonding_ambient_temp" class="form-control" value="<%= data.bonding_application.ambient_temp %>" data-required="true" required>
+        </div>
+        <div class="form-group">
+          <label>Relative Humidity (%) *</label>
+          <input type="text" name="bonding_relative_humidity" class="form-control" value="<%= data.bonding_application.relative_humidity %>" data-required="true" required>
+        </div>
+        <div class="form-group">
+          <label>Surface Temperature (°C) *</label>
+          <input type="text" name="bonding_surface_temp" class="form-control" value="<%= data.bonding_application.surface_temp %>" data-required="true" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Heating Blanket Cure Time *</label>
+          <input type="text" name="bonding_cure_time" class="form-control" value="<%= data.bonding_application.heating_blanket_cure_time %>" data-required="true" required>
+        </div>
+        <div class="form-group">
+          <label>Heating Blanket Temperature (°C) *</label>
+          <input type="text" name="bonding_blanket_temp" class="form-control" value="<%= data.bonding_application.heating_blanket_temp %>" data-required="true" required>
+        </div>
+      </div>
+      <% if (photos.bonding_application_photo && photos.bonding_application_photo.length) { %>
+        <% photos.bonding_application_photo.forEach(function(photo) { %>
+          <div class="existing-photo-block">
+            <img src="/uploads/<%= photo.filename %>" alt="Bonding application" class="brr-photo-thumb">
+            <label class="checkbox-label"><input type="checkbox" name="remove_photo_<%= photo.id %>" value="1"> Remove</label>
+          </div>
+        <% }); %>
+      <% } %>
+      <div class="form-group">
+        <label>Bonding Application Picture *</label>
+        <input type="file" name="bonding_application" class="form-control" accept="image/*" <%= (!photos.bonding_application_photo || !photos.bonding_application_photo.length) ? 'data-required="true" required' : '' %>>
+      </div>
+      <div class="form-group">
+        <label>Picture Comment *</label>
+        <input type="text" name="bonding_comment" class="form-control" value="<%= data.bonding_application.comment %>" data-required="true" required>
+      </div>
+    </section>
+
+    <hr class="divider">
+
+    <!-- Lamination -->
+    <section class="brr-section" data-section="lamination">
+      <%- include('../partials/brr-section-header', { title: 'Lamination', sectionKey: 'lamination', data }) %>
+      <div id="lamination-rows">
+        <% data.laminations.forEach(function(lam, index) { %>
+          <div class="lamination-block">
+            <h3 class="brr-lamination-heading">Lamination <%= index + 1 %></h3>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Ambient Temperature (°C) *</label>
+                <input type="text" name="lamination_ambient_<%= index %>" class="form-control" value="<%= lam.ambient_temp %>" data-required="true" required>
+              </div>
+              <div class="form-group">
+                <label>Relative Humidity (%) *</label>
+                <input type="text" name="lamination_humidity_<%= index %>" class="form-control" value="<%= lam.relative_humidity %>" data-required="true" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Surface Temperature (°C) *</label>
+                <input type="text" name="lamination_surface_<%= index %>" class="form-control" value="<%= lam.surface_temp %>" data-required="true" required>
+              </div>
+              <div class="form-group">
+                <label>Vacuum Pressure *</label>
+                <input type="text" name="lamination_vacuum_<%= index %>" class="form-control" value="<%= lam.vacuum_pressure %>" data-required="true" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Heating Blanket Cure Time *</label>
+                <input type="text" name="lamination_cure_time_<%= index %>" class="form-control" value="<%= lam.heating_blanket_cure_time %>" data-required="true" required>
+              </div>
+              <div class="form-group">
+                <label>Heating Blanket Temperature (°C) *</label>
+                <input type="text" name="lamination_blanket_temp_<%= index %>" class="form-control" value="<%= lam.heating_blanket_temp %>" data-required="true" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Lamination Size (mm) *</label>
+                <input type="text" name="lamination_size_<%= index %>" class="form-control" value="<%= lam.lamination_size %>" data-required="true" required>
+              </div>
+              <div class="form-group">
+                <label>Materials Replaced *</label>
+                <select name="lamination_materials_<%= index %>" class="form-control" data-required="true" required>
+                  <option value="">— Select —</option>
+                  <% config.materials_used.forEach(function(m) { %>
+                    <option value="<%= m %>" <%= lam.materials_replaced === m ? 'selected' : '' %>><%= m %></option>
+                  <% }); %>
+                </select>
+              </div>
+            </div>
+            <div class="lamination-mapping-grid">
+              <% laminationStages.forEach(function(stage, s) { %>
+                <% var existingLamPhoto = null;
+                   if (photos.lamination_mapping_photos) {
+                     photos.lamination_mapping_photos.forEach(function(p) {
+                       if (p.description && p.description.indexOf('lam:' + index + '|stage:' + s) === 0) existingLamPhoto = p;
+                     });
+                   }
+                %>
+                <div class="lamination-mapping-stage">
+                  <h4 class="brr-subsection-title"><%= stage %></h4>
+                  <% if (existingLamPhoto) { %>
+                    <img src="/uploads/<%= existingLamPhoto.filename %>" alt="<%= stage %>" class="brr-photo-thumb">
+                    <label class="checkbox-label"><input type="checkbox" name="remove_photo_<%= existingLamPhoto.id %>" value="1"> Remove</label>
+                  <% } %>
+                  <div class="form-group">
+                    <label>Picture *</label>
+                    <input type="file" name="lamination_<%= index %>_mapping_<%= s %>" class="form-control" accept="image/*" <%= !existingLamPhoto ? 'data-required="true" required' : '' %>>
+                  </div>
+                  <div class="form-group">
+                    <label>Comment *</label>
+                    <input type="text" name="lamination_<%= index %>_mapping_comment_<%= s %>" class="form-control"
+                           value="<%= lam.mapping_comments ? lam.mapping_comments[s] : '' %>" data-required="true" required>
+                  </div>
+                </div>
+              <% }); %>
+            </div>
+            <% if (index > 0) { %><button type="button" class="btn btn-outline btn-sm lamination-remove">Remove Lamination</button><% } %>
+          </div>
+        <% }); %>
+      </div>
+      <button type="button" id="add-lamination-btn" class="btn btn-outline btn-sm">+ Add Another Lamination</button>
+    </section>
+
+    <hr class="divider">
+
+    <!-- Shore D Test -->
+    <section class="brr-section" data-section="shore_d_test">
+      <%- include('../partials/brr-section-header', { title: 'Shore D Test Results', sectionKey: 'shore_d_test', data }) %>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Top Left *</label>
+          <input type="text" name="shore_top_left" class="form-control" value="<%= data.shore_d_test.top_left %>" data-required="true" required>
+        </div>
+        <div class="form-group">
+          <label>Top Right *</label>
+          <input type="text" name="shore_top_right" class="form-control" value="<%= data.shore_d_test.top_right %>" data-required="true" required>
+        </div>
+        <div class="form-group">
+          <label>Bottom Left *</label>
+          <input type="text" name="shore_bottom_left" class="form-control" value="<%= data.shore_d_test.bottom_left %>" data-required="true" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Bottom Right *</label>
+          <input type="text" name="shore_bottom_right" class="form-control" value="<%= data.shore_d_test.bottom_right %>" data-required="true" required>
+        </div>
+        <div class="form-group">
+          <label>Center *</label>
+          <input type="text" name="shore_center" class="form-control" value="<%= data.shore_d_test.center %>" data-required="true" required>
+        </div>
+      </div>
+    </section>
+
+    <hr class="divider">
+
+    <!-- Filler Application -->
+    <section class="brr-section" data-section="filler_application">
+      <%- include('../partials/brr-section-header', { title: 'Filler Application', sectionKey: 'filler_application', data }) %>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Ambient Temperature (°C) *</label>
+          <input type="text" name="filler_ambient_temp" class="form-control" value="<%= data.filler_application.ambient_temp %>" data-required="true" required>
+        </div>
+        <div class="form-group">
+          <label>Relative Humidity (%) *</label>
+          <input type="text" name="filler_relative_humidity" class="form-control" value="<%= data.filler_application.relative_humidity %>" data-required="true" required>
+        </div>
+        <div class="form-group">
+          <label>Surface Temperature (°C) *</label>
+          <input type="text" name="filler_surface_temp" class="form-control" value="<%= data.filler_application.surface_temp %>" data-required="true" required>
+        </div>
+      </div>
+      <% if (photos.filler_photos && photos.filler_photos.length) { %>
+        <div class="existing-photo-grid">
+          <% photos.filler_photos.forEach(function(photo) { %>
+            <div class="existing-photo-block">
+              <img src="/uploads/<%= photo.filename %>" alt="Filler" class="brr-photo-thumb">
+              <label class="checkbox-label"><input type="checkbox" name="remove_photo_<%= photo.id %>" value="1"> Remove</label>
+            </div>
+          <% }); %>
+        </div>
+      <% } %>
+      <div id="filler-photo-rows">
+        <div class="dynamic-photo-row">
+          <div class="form-group">
+            <label>Picture</label>
+            <input type="file" name="filler_photo_0" class="form-control" accept="image/*">
+          </div>
+        </div>
+      </div>
+      <button type="button" id="add-filler-photo-btn" class="btn btn-outline btn-sm">+ Add Picture</button>
+    </section>
+
+    <hr class="divider">
+
+    <!-- Paint -->
+    <section class="brr-section" data-section="paint">
+      <%- include('../partials/brr-section-header', { title: 'Paint', sectionKey: 'paint', data }) %>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Ambient Temperature (°C) *</label>
+          <input type="text" name="paint_ambient_temp" class="form-control" value="<%= data.paint.ambient_temp %>" data-required="true" required>
+        </div>
+        <div class="form-group">
+          <label>Relative Humidity (%) *</label>
+          <input type="text" name="paint_relative_humidity" class="form-control" value="<%= data.paint.relative_humidity %>" data-required="true" required>
+        </div>
+        <div class="form-group">
+          <label>Surface Temperature (°C) *</label>
+          <input type="text" name="paint_surface_temp" class="form-control" value="<%= data.paint.surface_temp %>" data-required="true" required>
+        </div>
+      </div>
+      <% if (photos.paint_photos && photos.paint_photos.length) { %>
+        <div class="existing-photo-grid">
+          <% photos.paint_photos.forEach(function(photo) { %>
+            <div class="existing-photo-block">
+              <img src="/uploads/<%= photo.filename %>" alt="Paint" class="brr-photo-thumb">
+              <label class="checkbox-label"><input type="checkbox" name="remove_photo_<%= photo.id %>" value="1"> Remove</label>
+            </div>
+          <% }); %>
+        </div>
+      <% } %>
+      <div id="paint-photo-rows">
+        <div class="dynamic-photo-row">
+          <div class="form-group">
+            <label>Picture</label>
+            <input type="file" name="paint_photo_0" class="form-control" accept="image/*">
+          </div>
+        </div>
+      </div>
+      <button type="button" id="add-paint-photo-btn" class="btn btn-outline btn-sm">+ Add Picture</button>
+    </section>
+
+    <hr class="divider">
+
+    <div class="form-group">
+      <label for="customer_email">Customer Email *</label>
+      <input type="email" id="customer_email" name="customer_email" class="form-control" value="<%= customerEmail %>" required>
+      <p class="hint">Report will be emailed here when approved by your manager.</p>
+    </div>
+
+    <div style="display:flex;gap:12px;margin-top:8px">
+      <button type="submit" class="btn btn-primary">
+        <%= mode === 'new' ? 'Submit for Review' : 'Save & Resubmit' %>
+      </button>
+      <a href="/employee/forms/<%= form.id %>" class="btn btn-outline">Cancel</a>
+    </div>
+  </form>
+</div>
+
+<script>
+  window.BRR_CONFIG = <%- JSON.stringify(config) %>;
+  window.BRR_LAMINATION_STAGES = <%- JSON.stringify(laminationStages) %>;
+</script>
+<script src="/js/blade-repair-na.js"></script>
+<script src="/js/blade-repair-workers.js"></script>
+<script src="/js/blade-repair-chemicals.js"></script>
+<script src="/js/blade-repair-laminations.js"></script>
+<script src="/js/blade-repair-photos.js"></script>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,81 @@
+<%- include('../../partials/header', { title, user }) %>
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Approved Time History</h1>
+    <p class="page-subtitle">Approved time organized by site and project</p>
+  </div>
+</div>
+
+<%- include('../../partials/time-nav', { user, activeTab }) %>
+
+<div class="split-summary-grid" style="margin-bottom:20px">
+  <div class="card">
+    <h2 class="list-heading">Weekly Totals by Employee</h2>
+    <p class="text-muted" style="margin-bottom:16px">Week of <%= weekStart %></p>
+    <% if (weeklyTotals.length === 0) { %>
+      <p class="text-muted">No approved hours this week.</p>
+    <% } else { %>
+      <div class="weekly-totals-grid">
+        <% weeklyTotals.forEach(function(row) { %>
+          <div class="weekly-total-card">
+            <span class="stat-label"><%= row.employee_name %></span>
+            <span class="stat-value"><%= row.total_hours %>h</span>
+            <span class="stat-sub"><%= row.entry_count %> entries</span>
+          </div>
+        <% }); %>
+      </div>
+    <% } %>
+  </div>
+
+  <div class="card">
+    <h2 class="list-heading">Weekly Totals by Site / Project</h2>
+    <p class="text-muted" style="margin-bottom:16px">Week of <%= weekStart %></p>
+    <% if (weeklySiteTotals.length === 0) { %>
+      <p class="text-muted">No approved hours this week.</p>
+    <% } else { %>
+      <div class="weekly-totals-grid">
+        <% weeklySiteTotals.forEach(function(row) { %>
+          <a href="/manager/time/history?site=<%= encodeURIComponent(row.site) %>" class="weekly-total-card site-total-link">
+            <span class="stat-label"><%= row.site %></span>
+            <span class="stat-value"><%= row.total_hours %>h</span>
+            <span class="stat-sub"><%= row.entry_count %> entries · <%= row.employee_count %> employees</span>
+          </a>
+        <% }); %>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<% if (siteSummaries.length > 0) { %>
+<div class="site-filter-bar">
+  <span class="site-filter-label">Filter by site:</span>
+  <div class="site-filter-tabs">
+    <a href="/manager/time/history" class="site-filter-tab <%= !siteFilter ? 'active' : '' %>">
+      All Sites <span class="count">(<%= siteSummaries.reduce(function(n, g) { return n + g.entry_count; }, 0) %>)</span>
+    </a>
+    <% siteSummaries.forEach(function(group) { %>
+      <a href="/manager/time/history?site=<%= encodeURIComponent(group.site) %>"
+         class="site-filter-tab <%= siteFilter === group.site ? 'active' : '' %>">
+        <%= group.site %> <span class="count">(<%= group.entry_count %>)</span>
+      </a>
+    <% }); %>
+  </div>
+</div>
+<% } %>
+
+<div class="card">
+  <% if (siteFilter) { %>
+    <div class="site-filter-active">
+      <span>Showing approved entries for <strong><%= siteFilter %></strong></span>
+      <a href="/manager/time/history" class="btn btn-outline btn-sm">Clear filter</a>
+    </div>
+  <% } %>
+  <%- include('../../partials/time-site-groups', {
+    siteGroups,
+    showApproved: true,
+    showJobRef: true
+  }) %>
+</div>
+
+<%- include('../../partials/footer') %>

@@ -1,0 +1,11 @@
+<nav class="section-nav">
+  <% if (user.role === 'employee') { %>
+    <a href="/time" class="section-tab <%= activeTab === 'overview' ? 'active' : '' %>">Overview</a>
+    <a href="/time/submit" class="section-tab <%= activeTab === 'submit' ? 'active' : '' %>">Submit Time</a>
+    <a href="/time/history" class="section-tab <%= activeTab === 'history' ? 'active' : '' %>">My History</a>
+  <% } else { %>
+    <a href="/manager/time" class="section-tab <%= activeTab === 'pending' ? 'active' : '' %>">Time Approval</a>
+    <a href="/manager/time/history" class="section-tab <%= activeTab === 'history' ? 'active' : '' %>">Approved History</a>
+    <a href="/manager/time/settings" class="section-tab <%= activeTab === 'settings' ? 'active' : '' %>">Site Settings</a>
+  <% } %>
+</nav>

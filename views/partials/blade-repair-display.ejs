@@ -1,0 +1,180 @@
+<h2 class="brr-form-title"><%= submission.form_name %></h2>
+
+<% function sectionNa(key) { return birData.section_na && birData.section_na[key]; } %>
+
+<section class="brr-display-section">
+  <h3 class="brr-section-title">Turbine Information <%= sectionNa('turbine_information') ? '(N/A)' : '' %></h3>
+  <% if (!sectionNa('turbine_information')) { %>
+  <div class="detail-grid">
+    <div class="detail-item"><label>Customer</label><p><%= birData.customer || '—' %></p></div>
+    <div class="detail-item"><label>Site</label><p><%= birData.site || '—' %></p></div>
+    <div class="detail-item"><label>WTG Platform</label><p><%= birData.wtg_platform || '—' %></p></div>
+    <div class="detail-item"><label>WTG Local ID</label><p><%= birData.wtg_local_id || '—' %></p></div>
+    <div class="detail-item"><label>Blade OEM</label><p><%= birData.blade_oem || '—' %></p></div>
+    <div class="detail-item"><label>Blade Type</label><p><%= birData.blade_type || '—' %></p></div>
+    <div class="detail-item"><label>Blade Length</label><p><%= birData.blade_length || '—' %></p></div>
+    <div class="detail-item"><label>Blade Designation</label><p><%= birData.blade_designation || '—' %></p></div>
+    <div class="detail-item"><label>Blade Serial Number</label><p><%= birData.blade_serial_number || '—' %></p></div>
+    <div class="detail-item"><label>Damage ID</label><p><%= birData.damage_id || '—' %></p></div>
+  </div>
+  <% if (birData.technicians && birData.technicians.length) { %>
+    <ul class="technician-display-list">
+      <% birData.technicians.forEach(function(t, i) { if (t) { %><li><strong>Technician <%= i + 1 %>:</strong> <%= t %></li><% } }); %>
+    </ul>
+  <% } %>
+  <% } %>
+</section>
+
+<section class="brr-display-section">
+  <h3 class="brr-section-title">Chemicals Used <%= sectionNa('chemicals_used') ? '(N/A)' : '' %></h3>
+  <% if (!sectionNa('chemicals_used') && birData.chemicals) { %>
+    <% birData.chemicals.forEach(function(c, i) { %>
+      <div class="brr-inline-block">
+        <strong>Chemical <%= i + 1 %></strong>
+        <p><%= c.material_used %> · Batch <%= c.batch_number %> · Exp. <%= c.expiration_date %></p>
+      </div>
+    <% }); %>
+  <% } %>
+</section>
+
+<section class="brr-display-section">
+  <h3 class="brr-section-title">Initial Inspection <%= sectionNa('initial_inspection') ? '(N/A)' : '' %></h3>
+  <% if (!sectionNa('initial_inspection')) { %>
+    <p><strong>Blade ID Tag Comment:</strong> <%= birData.blade_id_tag_comment || '—' %></p>
+    <% if (photos.blade_id_tag_photo && photos.blade_id_tag_photo.length) { %>
+      <img src="/uploads/<%= photos.blade_id_tag_photo[0].filename %>" class="brr-photo" alt="Blade ID Tag">
+    <% } %>
+    <% if (photos.initial_damage_photos && photos.initial_damage_photos.length) { %>
+      <div class="brr-photo-gallery">
+        <% photos.initial_damage_photos.forEach(function(p) { %>
+          <div class="brr-photo-item">
+            <img src="/uploads/<%= p.filename %>" class="brr-photo" alt="Initial damage">
+            <% if (p.description) { %><p class="brr-photo-caption"><%= p.description %></p><% } %>
+          </div>
+        <% }); %>
+      </div>
+    <% } %>
+  <% } %>
+</section>
+
+<section class="brr-display-section">
+  <h3 class="brr-section-title">Topcoat Removed <%= sectionNa('topcoat_removed') ? '(N/A)' : '' %></h3>
+  <% if (!sectionNa('topcoat_removed')) { %>
+    <p><%= birData.topcoat_removed_comment || '—' %></p>
+    <% if (photos.topcoat_removed_photo && photos.topcoat_removed_photo[0]) { %>
+      <img src="/uploads/<%= photos.topcoat_removed_photo[0].filename %>" class="brr-photo" alt="Topcoat removed">
+    <% } %>
+  <% } %>
+</section>
+
+<section class="brr-display-section">
+  <h3 class="brr-section-title">Damage Exposed <%= sectionNa('damage_exposed') ? '(N/A)' : '' %></h3>
+  <% if (!sectionNa('damage_exposed')) { %>
+    <p><%= birData.damage_exposed_comment || '—' %></p>
+    <% if (photos.damage_exposed_photo && photos.damage_exposed_photo[0]) { %>
+      <img src="/uploads/<%= photos.damage_exposed_photo[0].filename %>" class="brr-photo" alt="Damage exposed">
+    <% } %>
+  <% } %>
+</section>
+
+<section class="brr-display-section">
+  <h3 class="brr-section-title">Bonding Application <%= sectionNa('bonding_application') ? '(N/A)' : '' %></h3>
+  <% if (!sectionNa('bonding_application')) { %>
+    <div class="detail-grid">
+      <div class="detail-item"><label>Ambient Temp (°C)</label><p><%= birData.bonding_application.ambient_temp || '—' %></p></div>
+      <div class="detail-item"><label>Relative Humidity (%)</label><p><%= birData.bonding_application.relative_humidity || '—' %></p></div>
+      <div class="detail-item"><label>Surface Temp (°C)</label><p><%= birData.bonding_application.surface_temp || '—' %></p></div>
+      <div class="detail-item"><label>Cure Time</label><p><%= birData.bonding_application.heating_blanket_cure_time || '—' %></p></div>
+      <div class="detail-item"><label>Blanket Temp (°C)</label><p><%= birData.bonding_application.heating_blanket_temp || '—' %></p></div>
+    </div>
+    <p><strong>Comment:</strong> <%= birData.bonding_application.comment || '—' %></p>
+    <% if (photos.bonding_application_photo && photos.bonding_application_photo[0]) { %>
+      <img src="/uploads/<%= photos.bonding_application_photo[0].filename %>" class="brr-photo" alt="Bonding">
+    <% } %>
+  <% } %>
+</section>
+
+<section class="brr-display-section">
+  <h3 class="brr-section-title">Lamination <%= sectionNa('lamination') ? '(N/A)' : '' %></h3>
+  <% if (!sectionNa('lamination') && birData.laminations) { %>
+    <% birData.laminations.forEach(function(lam, index) { %>
+      <div class="brr-lamination-display">
+        <h4>Lamination <%= index + 1 %></h4>
+        <div class="detail-grid">
+          <div class="detail-item"><label>Ambient (°C)</label><p><%= lam.ambient_temp || '—' %></p></div>
+          <div class="detail-item"><label>Humidity (%)</label><p><%= lam.relative_humidity || '—' %></p></div>
+          <div class="detail-item"><label>Surface (°C)</label><p><%= lam.surface_temp || '—' %></p></div>
+          <div class="detail-item"><label>Vacuum</label><p><%= lam.vacuum_pressure || '—' %></p></div>
+          <div class="detail-item"><label>Size (mm)</label><p><%= lam.lamination_size || '—' %></p></div>
+          <div class="detail-item"><label>Materials</label><p><%= lam.materials_replaced || '—' %></p></div>
+        </div>
+        <% if (photos.lamination_mapping_photos) { %>
+          <div class="brr-photo-gallery">
+            <% photos.lamination_mapping_photos.forEach(function(p) {
+                 if (!p.description || p.description.indexOf('lam:' + index + '|') !== 0) return;
+                 var stagePart = p.description.split('|')[1] || '';
+                 var stageIndex = parseInt(stagePart.replace('stage:', ''), 10);
+                 var stageName = laminationStages && laminationStages[stageIndex]
+                   ? laminationStages[stageIndex]
+                   : ('Stage ' + (stageIndex + 1));
+            %>
+              <div class="brr-photo-item">
+                <img src="/uploads/<%= p.filename %>" class="brr-photo" alt="Lamination mapping">
+                <p class="brr-photo-caption"><%= stageName %> — <%= lam.mapping_comments ? lam.mapping_comments[stageIndex] : '' %></p>
+              </div>
+            <% }); %>
+          </div>
+        <% } %>
+      </div>
+    <% }); %>
+  <% } %>
+</section>
+
+<section class="brr-display-section">
+  <h3 class="brr-section-title">Shore D Test Results <%= sectionNa('shore_d_test') ? '(N/A)' : '' %></h3>
+  <% if (!sectionNa('shore_d_test')) { %>
+  <div class="detail-grid">
+    <div class="detail-item"><label>Top Left</label><p><%= birData.shore_d_test.top_left || '—' %></p></div>
+    <div class="detail-item"><label>Top Right</label><p><%= birData.shore_d_test.top_right || '—' %></p></div>
+    <div class="detail-item"><label>Bottom Left</label><p><%= birData.shore_d_test.bottom_left || '—' %></p></div>
+    <div class="detail-item"><label>Bottom Right</label><p><%= birData.shore_d_test.bottom_right || '—' %></p></div>
+    <div class="detail-item"><label>Center</label><p><%= birData.shore_d_test.center || '—' %></p></div>
+  </div>
+  <% } %>
+</section>
+
+<section class="brr-display-section">
+  <h3 class="brr-section-title">Filler Application <%= sectionNa('filler_application') ? '(N/A)' : '' %></h3>
+  <% if (!sectionNa('filler_application')) { %>
+    <div class="detail-grid">
+      <div class="detail-item"><label>Ambient (°C)</label><p><%= birData.filler_application.ambient_temp || '—' %></p></div>
+      <div class="detail-item"><label>Humidity (%)</label><p><%= birData.filler_application.relative_humidity || '—' %></p></div>
+      <div class="detail-item"><label>Surface (°C)</label><p><%= birData.filler_application.surface_temp || '—' %></p></div>
+    </div>
+    <% if (photos.filler_photos && photos.filler_photos.length) { %>
+      <div class="brr-photo-gallery">
+        <% photos.filler_photos.forEach(function(p) { %>
+          <img src="/uploads/<%= p.filename %>" class="brr-photo" alt="Filler">
+        <% }); %>
+      </div>
+    <% } %>
+  <% } %>
+</section>
+
+<section class="brr-display-section">
+  <h3 class="brr-section-title">Paint <%= sectionNa('paint') ? '(N/A)' : '' %></h3>
+  <% if (!sectionNa('paint')) { %>
+    <div class="detail-grid">
+      <div class="detail-item"><label>Ambient (°C)</label><p><%= birData.paint.ambient_temp || '—' %></p></div>
+      <div class="detail-item"><label>Humidity (%)</label><p><%= birData.paint.relative_humidity || '—' %></p></div>
+      <div class="detail-item"><label>Surface (°C)</label><p><%= birData.paint.surface_temp || '—' %></p></div>
+    </div>
+    <% if (photos.paint_photos && photos.paint_photos.length) { %>
+      <div class="brr-photo-gallery">
+        <% photos.paint_photos.forEach(function(p) { %>
+          <img src="/uploads/<%= p.filename %>" class="brr-photo" alt="Paint">
+        <% }); %>
+      </div>
+    <% } %>
+  <% } %>
+</section>

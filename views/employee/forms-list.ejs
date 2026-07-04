@@ -1,0 +1,36 @@
+<%- include('../partials/header', { title, user }) %>
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Choose a Form</h1>
+    <p class="page-subtitle">Select a form to view your submissions or start a new one</p>
+  </div>
+</div>
+
+<% if (flash) { %>
+  <div class="alert alert-<%= flash.type %>"><%= flash.message %></div>
+<% } %>
+
+<% if (forms.length === 0) { %>
+  <div class="card empty-state">
+    <p>No forms are available yet. Ask your manager to create one.</p>
+  </div>
+<% } else { %>
+  <div class="form-cards">
+    <% forms.forEach(function(f) { %>
+      <a href="/employee/forms/<%= f.id %>" class="form-card">
+        <div class="form-card-icon">📋</div>
+        <h3><%= f.name %></h3>
+        <% if (f.description) { %>
+          <p class="form-card-desc"><%= f.description %></p>
+        <% } %>
+        <div class="form-card-meta">
+          <span><%= f.field_count %> fields</span>
+          <span><%= f.my_submission_count %> submission<%= f.my_submission_count === 1 ? '' : 's' %></span>
+        </div>
+      </a>
+    <% }); %>
+  </div>
+<% } %>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,71 @@
+<%- include('../partials/header', { title, user }) %>
+
+<div class="page-header">
+  <div>
+    <p class="breadcrumb"><a href="/manager/forms">Manage Forms</a></p>
+    <h1 class="page-title">Edit <%= form.name %> Form</h1>
+    <p class="page-subtitle">Manage dropdown options — the form layout is fixed</p>
+  </div>
+</div>
+
+<div class="card">
+  <% if (error) { %>
+    <div class="alert alert-error"><%= error %></div>
+  <% } %>
+
+  <form method="POST" action="/manager/forms/<%= form.id %>">
+    <input type="hidden" name="di_save" value="1">
+
+    <h2 class="di-form-title"><%= form.name %></h2>
+    <p class="text-muted" style="margin-bottom:24px">Fixed layout with 6 sections. Edit dropdown options below.</p>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="customer_email_default">Default Customer Email</label>
+        <input type="email" id="customer_email_default" name="customer_email_default" class="form-control"
+               value="<%= form.customer_email_default || defaultCustomerEmail %>">
+      </div>
+      <div class="form-group">
+        <label class="checkbox-label" style="margin-top:28px">
+          <input type="checkbox" name="is_active" value="1" <%= form.is_active ? 'checked' : '' %>>
+          Form is active (visible to employees)
+        </label>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <h3 class="di-section-title">Dropdown Options</h3>
+    <p class="text-muted" style="margin-bottom:20px">One option per line.</p>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="sites">Site Options</label>
+        <textarea id="sites" name="sites" class="form-control option-list" rows="8"><%= config.sites.join('\n') %></textarea>
+      </div>
+      <div class="form-group">
+        <label for="lift_types">Type of Lift Options</label>
+        <textarea id="lift_types" name="lift_types" class="form-control option-list" rows="8"><%= config.lift_types.join('\n') %></textarea>
+      </div>
+    </div>
+
+    <div class="jsa-layout-preview">
+      <h3 class="di-section-title">Form Layout (fixed)</h3>
+      <ol class="layout-list">
+        <li><strong>Section 1: Daily Inspection</strong> — Inspector, Date/Time, Site, Tower #, Lift Type</li>
+        <li><strong>Section 2: Lift Inspection</strong> — 16 Yes/No questions</li>
+        <li><strong>Section 3: Driver Side Setup</strong> — Photo upload</li>
+        <li><strong>Section 4: Passenger Side Setup</strong> — Photo upload</li>
+        <li><strong>Section 5: Shutdown Checklist</strong> — 8 required checkboxes</li>
+        <li><strong>Section 6: Acknowledgement</strong> — Certification text + signature pad</li>
+      </ol>
+    </div>
+
+    <div style="display:flex;gap:12px;margin-top:24px">
+      <button type="submit" class="btn btn-primary">Save Options</button>
+      <a href="/manager/forms" class="btn btn-outline">Cancel</a>
+    </div>
+  </form>
+</div>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,57 @@
+<%- include('../partials/header', { title, user }) %>
+
+<div class="page-header">
+  <div>
+    <p class="breadcrumb">
+      <a href="/employee">All Forms</a> /
+      <a href="/employee/forms/<%= form.id || submission.form_id %>"><%= form.name || submission.form_name %></a>
+    </p>
+    <h1 class="page-title"><%= mode === 'new' ? 'Start New Form' : 'Edit Submission' %></h1>
+    <p class="page-subtitle"><%= form.name || submission.form_name %></p>
+  </div>
+</div>
+
+<div class="card" style="max-width:680px">
+  <% if (error) { %>
+    <div class="alert alert-error"><%= error %></div>
+  <% } %>
+
+  <form method="POST"
+        action="<%= mode === 'new' ? '/employee/forms/' + form.id + '/new' : '/employee/submissions/' + submission.id + '/edit' %>"
+        enctype="multipart/form-data">
+
+    <%- include('../partials/dynamic-fields', { fields: form.fields, values, form }) %>
+
+    <div class="form-group">
+      <label for="customer_email">Customer Email *</label>
+      <input type="email" id="customer_email" name="customer_email" class="form-control"
+             value="<%= typeof values.customer_email !== 'undefined' && values.customer_email ? values.customer_email : defaultCustomerEmail %>" required>
+      <p class="hint">Report will be emailed here when approved by your manager.</p>
+    </div>
+
+    <% if (mode === 'edit' && photos.length > 0) { %>
+    <div class="form-group">
+      <label>Current Photos</label>
+      <div class="photo-grid">
+        <% photos.forEach(function(p) { %>
+          <label class="photo-remove-item">
+            <img src="/uploads/<%= p.filename %>" alt="<%= p.original_name %>">
+            <span>
+              <input type="checkbox" name="remove_photos" value="<%= p.id %>"> Remove
+            </span>
+          </label>
+        <% }); %>
+      </div>
+    </div>
+    <% } %>
+
+    <div style="display:flex;gap:12px;margin-top:8px">
+      <button type="submit" class="btn btn-primary">
+        <%= mode === 'new' ? 'Submit for Review' : 'Save & Resubmit' %>
+      </button>
+      <a href="/employee/forms/<%= form.id || submission.form_id %>" class="btn btn-outline">Cancel</a>
+    </div>
+  </form>
+</div>
+
+<%- include('../partials/footer') %>

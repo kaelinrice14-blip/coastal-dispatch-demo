@@ -1,0 +1,74 @@
+<%- include('../../partials/header', { title, user }) %>
+
+<div class="page-header">
+  <div>
+    <p class="breadcrumb"><a href="/manager/users">Manage Employees</a></p>
+    <h1 class="page-title"><%= editUser ? 'Edit Employee' : 'Add Employee' %></h1>
+    <p class="page-subtitle"><%= editUser ? 'Update account information' : 'Create a new account' %></p>
+  </div>
+</div>
+
+<div class="card" style="max-width:520px">
+  <% if (error) { %>
+    <div class="alert alert-error"><%= error %></div>
+  <% } %>
+
+  <form method="POST" action="<%= editUser ? '/manager/users/' + editUser.id : '/manager/users' %>">
+    <div class="form-group">
+      <label for="name">Full Name *</label>
+      <input type="text" id="name" name="name" class="form-control" required
+             value="<%= form.name %>" placeholder="e.g. Jane Smith">
+    </div>
+
+    <div class="form-group">
+      <label for="email">Email *</label>
+      <input type="email" id="email" name="email" class="form-control" required
+             value="<%= form.email %>" placeholder="employee@company.com">
+    </div>
+
+    <div class="form-group">
+      <label for="job_title">Job Title *</label>
+      <input type="text" id="job_title" name="job_title" class="form-control" required
+             value="<%= form.job_title %>" placeholder="e.g. Field Technician">
+    </div>
+
+    <div class="form-group">
+      <label for="role">Role *</label>
+      <select id="role" name="role" class="form-control" required
+              <%= editUser && editUser.id === user.id ? 'disabled' : '' %>>
+        <% roles.forEach(function(r) { %>
+          <option value="<%= r %>" <%= form.role === r ? 'selected' : '' %>>
+            <%= r.charAt(0).toUpperCase() + r.slice(1) %>
+          </option>
+        <% }); %>
+      </select>
+      <% if (editUser && editUser.id === user.id) { %>
+        <input type="hidden" name="role" value="manager">
+        <p class="hint">You cannot change your own role.</p>
+      <% } %>
+    </div>
+
+    <div class="form-group">
+      <label for="password">Password <%= editUser ? '' : '*' %></label>
+      <input type="text" id="password" name="password" class="form-control"
+             <%= editUser ? '' : 'required' %> minlength="8"
+             value="<%- form.password %>"
+             autocomplete="off"
+             placeholder="<%= editUser && !form.password ? 'Password not on file — enter a new one' : 'Minimum 8 characters' %>">
+      <% if (editUser) { %>
+        <p class="hint">Current password is shown above. Change it here to set a new one.</p>
+      <% } else { %>
+        <p class="hint">You can view and edit this password anytime from the employee edit screen.</p>
+      <% } %>
+    </div>
+
+    <div style="display:flex;gap:12px;margin-top:8px">
+      <button type="submit" class="btn btn-primary">
+        <%= editUser ? 'Save Changes' : 'Add Employee' %>
+      </button>
+      <a href="/manager/users" class="btn btn-outline">Cancel</a>
+    </div>
+  </form>
+</div>
+
+<%- include('../../partials/footer') %>

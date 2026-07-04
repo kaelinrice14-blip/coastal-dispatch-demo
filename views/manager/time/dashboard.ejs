@@ -1,0 +1,135 @@
+<%- include('../../partials/header', { title, user }) %>
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Time Approval</h1>
+    <p class="page-subtitle">Review employee time organized by site and project</p>
+  </div>
+</div>
+
+<%- include('../../partials/time-nav', { user, activeTab }) %>
+
+<% if (flash) { %>
+  <div class="alert alert-<%= flash.type %>"><%= flash.message %></div>
+<% } %>
+
+<div class="filter-tabs">
+  <a href="/manager/time?status=pending<%= siteFilter ? '&site=' + encodeURIComponent(siteFilter) : '' %>" class="filter-tab <%= filter === 'pending' ? 'active' : '' %>">
+    Pending <span class="count">(<%= counts.pending || 0 %>)</span>
+  </a>
+  <a href="/manager/time?status=approved<%= siteFilter ? '&site=' + encodeURIComponent(siteFilter) : '' %>" class="filter-tab <%= filter === 'approved' ? 'active' : '' %>">
+    Approved <span class="count">(<%= counts.approved || 0 %>)</span>
+  </a>
+  <a href="/manager/time?status=rejected<%= siteFilter ? '&site=' + encodeURIComponent(siteFilter) : '' %>" class="filter-tab <%= filter === 'rejected' ? 'active' : '' %>">
+    Rejected <span class="count">(<%= counts.rejected || 0 %>)</span>
+  </a>
+  <a href="/manager/time?status=all<%= siteFilter ? '&site=' + encodeURIComponent(siteFilter) : '' %>" class="filter-tab <%= filter === 'all' ? 'active' : '' %>">All</a>
+</div>
+
+<% if (siteSummaries.length > 0) { %>
+<div class="site-filter-bar">
+  <span class="site-filter-label">Filter by site:</span>
+  <div class="site-filter-tabs">
+    <a href="/manager/time?status=<%= filter %>" class="site-filter-tab <%= !siteFilter ? 'active' : '' %>">
+      All Sites <span class="count">(<%= siteSummaries.reduce(function(n, g) { return n + g.entry_count; }, 0) %>)</span>
+    </a>
+    <% siteSummaries.forEach(function(group) { %>
+      <a href="/manager/time?status=<%= filter %>&site=<%= encodeURIComponent(group.site) %>"
+         class="site-filter-tab <%= siteFilter === group.site ? 'active' : '' %>">
+        <%= group.site %> <span class="count">(<%= group.entry_count %>)</span>
+      </a>
+    <% }); %>
+  </div>
+</div>
+<% } %>
+
+<% if (siteSummaries.length > 0 && !siteFilter) { %>
+<div class="card" style="margin-bottom:20px">
+  <h2 class="list-heading">Hours by Site / Project</h2>
+  <div class="site-summary-grid">
+    <% siteSummaries.forEach(function(group) { %>
+      <a href="/manager/time?status=<%= filter %>&site=<%= encodeURIComponent(group.site) %>" class="site-summary-card">
+        <span class="site-summary-name"><%= group.site %></span>
+        <span class="site-summary-hours"><%= group.total_hours %>h</span>
+        <span class="site-summary-meta"><%= group.entry_count %> entries · <%= group.employee_count %> employees</span>
+      </a>
+    <% }); %>
+  </div>
+</div>
+<% } %>
+
+<div class="card">
+  <% if (siteFilter) { %>
+    <div class="site-filter-active">
+      <span>Showing entries for <strong><%= siteFilter %></strong></span>
+      <a href="/manager/time?status=<%= filter %>" class="btn btn-outline btn-sm">Clear filter</a>
+    </div>
+  <% } %>
+  <%- include('../../partials/time-site-groups', {
+    siteGroups,
+    showStatus: true,
+    showActions: true
+  }) %>
+</div>
+
+<div class="split-summary-grid" style="margin-top:24px">
+  <div class="card">
+    <h2 class="list-heading">Weekly Hours by Employee</h2>
+    <p class="text-muted" style="margin-bottom:16px">Week of <%= weekStart %></p>
+
+    <% if (weeklyTotals.length === 0) { %>
+      <p class="text-muted">No approved hours this week.</p>
+    <% } else { %>
+      <table>
+        <thead>
+          <tr>
+            <th>Employee</th>
+            <th>Entries</th>
+            <th>Total Hours</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% weeklyTotals.forEach(function(row) { %>
+          <tr>
+            <td><strong><%= row.employee_name %></strong></td>
+            <td><%= row.entry_count %></td>
+            <td><strong><%= row.total_hours %>h</strong></td>
+          </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    <% } %>
+  </div>
+
+  <div class="card">
+    <h2 class="list-heading">Weekly Hours by Site / Project</h2>
+    <p class="text-muted" style="margin-bottom:16px">Week of <%= weekStart %></p>
+
+    <% if (weeklySiteTotals.length === 0) { %>
+      <p class="text-muted">No approved hours this week.</p>
+    <% } else { %>
+      <table>
+        <thead>
+          <tr>
+            <th>Site / Project</th>
+            <th>Employees</th>
+            <th>Entries</th>
+            <th>Total Hours</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% weeklySiteTotals.forEach(function(row) { %>
+          <tr>
+            <td><strong><%= row.site %></strong></td>
+            <td><%= row.employee_count %></td>
+            <td><%= row.entry_count %></td>
+            <td><strong><%= row.total_hours %>h</strong></td>
+          </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    <% } %>
+  </div>
+</div>
+
+<%- include('../../partials/footer') %>

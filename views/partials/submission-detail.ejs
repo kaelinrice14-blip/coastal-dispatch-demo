@@ -1,0 +1,55 @@
+<div class="detail-grid">
+  <div class="detail-item">
+    <label>Form</label>
+    <p><%= submission.form_name %></p>
+  </div>
+
+  <div class="detail-item">
+    <label>Customer Email</label>
+    <p><%= submission.customer_email %></p>
+  </div>
+
+  <div class="detail-item">
+    <label>Submitted</label>
+    <p><%= submission.created_at %></p>
+  </div>
+
+  <% if (submission.reviewed_at) { %>
+  <div class="detail-item">
+    <label>Reviewed</label>
+    <p><%= submission.reviewed_at %> by <%= submission.reviewer_name || 'Manager' %></p>
+  </div>
+  <% } %>
+
+  <% values.forEach(function(v) { if (v.value) { %>
+  <div class="detail-item">
+    <label><%= v.label %></label>
+    <% if (['textarea', 'job_details', 'site_contacts'].includes(v.field_type)) { %>
+      <div class="detail-content"><%= v.value %></div>
+    <% } else { %>
+      <p><%= v.value %></p>
+    <% } %>
+  </div>
+  <% } }); %>
+
+  <% if (photos && photos.length > 0) { %>
+  <div class="detail-item">
+    <label>Photos (<%= photos.length %>)</label>
+    <div class="photo-grid">
+      <% photos.forEach(function(p) { %>
+        <a href="/uploads/<%= p.filename %>" target="_blank" class="photo-thumb">
+          <img src="/uploads/<%= p.filename %>" alt="<%= p.original_name %>">
+          <span><%= p.label %></span>
+        </a>
+      <% }); %>
+    </div>
+  </div>
+  <% } %>
+
+  <% if (submission.manager_notes) { %>
+  <div class="detail-item">
+    <label>Manager Notes</label>
+    <div class="detail-content"><%= submission.manager_notes %></div>
+  </div>
+  <% } %>
+</div>

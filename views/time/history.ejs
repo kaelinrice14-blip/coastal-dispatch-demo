@@ -1,0 +1,67 @@
+<%- include('../partials/header', { title, user }) %>
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">My Time History</h1>
+    <p class="page-subtitle">View your submitted and approved time entries</p>
+  </div>
+</div>
+
+<%- include('../partials/time-nav', { user, activeTab }) %>
+
+<div class="card stat-card" style="margin-bottom:20px">
+  <span class="stat-label">Week of <%= weekTotal.week_start %></span>
+  <span class="stat-value"><%= weekTotal.total_hours %>h approved</span>
+  <span class="stat-sub"><%= weekTotal.entry_count %> entries</span>
+</div>
+
+<div class="filter-tabs">
+  <a href="/time/history?status=all" class="filter-tab <%= filter === 'all' ? 'active' : '' %>">All</a>
+  <a href="/time/history?status=pending" class="filter-tab <%= filter === 'pending' ? 'active' : '' %>">Pending</a>
+  <a href="/time/history?status=approved" class="filter-tab <%= filter === 'approved' ? 'active' : '' %>">Approved</a>
+  <a href="/time/history?status=rejected" class="filter-tab <%= filter === 'rejected' ? 'active' : '' %>">Rejected</a>
+</div>
+
+<div class="card table-wrap">
+  <% if (entries.length === 0) { %>
+    <div class="empty-state" style="padding:32px"><p>No entries in this category.</p></div>
+  <% } else { %>
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Hours</th>
+          <th>Site</th>
+          <th>State</th>
+          <th>Hours Type</th>
+          <th>Time</th>
+          <th>Job Ref</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% entries.forEach(function(e) { %>
+        <tr>
+          <td><%= e.entry_date %></td>
+          <td><strong><%= e.total_hours %>h</strong></td>
+          <td><%= e.site %></td>
+          <td><%= e.state || '—' %></td>
+          <td><%= e.hours_type || '—' %></td>
+          <td style="font-size:0.8125rem"><%= e.start_time %> – <%= e.end_time %></td>
+          <td style="font-size:0.8125rem"><%= e.job_reference || '—' %></td>
+          <td><span class="badge badge-<%= e.status %>"><%= e.status %></span></td>
+        </tr>
+        <% if (e.manager_notes) { %>
+        <tr>
+          <td colspan="8" style="font-size:0.8125rem;color:var(--text-muted);padding-top:0">
+            Manager note: <%= e.manager_notes %>
+          </td>
+        </tr>
+        <% } %>
+        <% }); %>
+      </tbody>
+    </table>
+  <% } %>
+</div>
+
+<%- include('../partials/footer') %>

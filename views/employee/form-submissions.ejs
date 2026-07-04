@@ -1,0 +1,65 @@
+<%- include('../partials/header', { title, user }) %>
+
+<div class="page-header">
+  <div>
+    <p class="breadcrumb"><a href="/employee">All Forms</a> / <%= form.name %></p>
+    <h1 class="page-title"><%= form.name %></h1>
+    <% if (form.description) { %>
+      <p class="page-subtitle"><%= form.description %></p>
+    <% } %>
+  </div>
+  <a href="/employee/forms/<%= form.id %>/new" class="btn btn-primary">+ Start New Form</a>
+</div>
+
+<% if (flash) { %>
+  <div class="alert alert-<%= flash.type %>"><%= flash.message %></div>
+<% } %>
+
+<div class="split-layout">
+  <div class="submission-list card">
+    <h2 class="list-heading">Your Submissions</h2>
+
+    <% if (submissions.length === 0) { %>
+      <div class="empty-state" style="padding:32px 16px">
+        <p>No submissions yet.</p>
+        <a href="/employee/forms/<%= form.id %>/new" class="btn btn-primary btn-sm">Start New Form</a>
+      </div>
+    <% } else { %>
+      <div class="submission-scroll">
+        <% submissions.forEach(function(s) { %>
+          <div class="submission-item">
+            <div class="submission-item-main">
+              <strong><%= s.summary.title %></strong>
+              <span class="text-muted">
+                <%= s.summary.subtitle || new Date(s.created_at).toLocaleDateString() %>
+              </span>
+            </div>
+            <span class="badge badge-<%= s.status %>"><%= s.status %></span>
+            <div class="submission-item-actions">
+              <a href="/employee/submissions/<%= s.id %>" class="btn btn-outline btn-sm">View</a>
+              <% if (s.status === 'pending' || s.status === 'rejected') { %>
+                <a href="/employee/submissions/<%= s.id %>/edit" class="btn btn-primary btn-sm">Edit</a>
+              <% } %>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    <% } %>
+  </div>
+
+  <div class="card form-info-panel">
+    <h3>Form Details</h3>
+    <ul class="info-list">
+      <li><strong>Fields:</strong> <%= form.fields.length %></li>
+      <li><strong>Max photos:</strong> <%= form.max_photos %></li>
+      <% if (form.customer_email_default) { %>
+        <li><strong>Default email:</strong> <%= form.customer_email_default %></li>
+      <% } %>
+    </ul>
+    <a href="/employee/forms/<%= form.id %>/new" class="btn btn-primary" style="width:100%;margin-top:16px">
+      + Start New Form
+    </a>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

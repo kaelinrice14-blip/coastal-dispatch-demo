@@ -1,0 +1,39 @@
+<%- include('../../partials/header', { title, user }) %>
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Time Settings</h1>
+    <p class="page-subtitle">Manage dropdown options for time entry forms</p>
+  </div>
+</div>
+
+<%- include('../../partials/time-nav', { user, activeTab }) %>
+
+<% if (flash) { %>
+  <div class="alert alert-<%= flash.type %>"><%= flash.message %></div>
+<% } %>
+
+<div class="card" style="max-width:720px">
+  <% if (error) { %>
+    <div class="alert alert-error"><%= error %></div>
+  <% } %>
+
+  <form method="POST" action="/manager/time/settings">
+    <div class="form-row">
+      <div class="form-group">
+        <label for="sites">Site / Wind Farm Options</label>
+        <textarea id="sites" name="sites" class="form-control option-list" rows="10"><%= sites.join('\n') %></textarea>
+        <p class="hint">One site per line.</p>
+      </div>
+      <div class="form-group">
+        <label for="hours_types">Type of Hours Options</label>
+        <textarea id="hours_types" name="hours_types" class="form-control option-list" rows="10"><%= hoursTypes.join('\n') %></textarea>
+        <p class="hint">One type per line (e.g. Regular, Overtime, Travel).</p>
+      </div>
+    </div>
+    <p class="hint" style="margin-bottom:16px">State options are fixed to all US states and are not editable.</p>
+    <button type="submit" class="btn btn-primary">Save Settings</button>
+  </form>
+</div>
+
+<%- include('../../partials/footer') %>

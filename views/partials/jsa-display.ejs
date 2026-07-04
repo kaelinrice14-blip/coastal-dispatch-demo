@@ -1,0 +1,70 @@
+<h2 class="jsa-form-title">JSA</h2>
+
+<h3 class="jsa-section-title">General Information</h3>
+
+<div class="detail-grid">
+  <div class="detail-item">
+    <label>Job Site / Wind Farm</label>
+    <p><%= jsaData.job_site || '—' %></p>
+  </div>
+
+  <div class="detail-item">
+    <label>Date and Time</label>
+    <p><%= jsaData.date_time || '—' %></p>
+  </div>
+
+  <div class="detail-item">
+    <label>Customer</label>
+    <p><%= jsaData.customer || '—' %></p>
+  </div>
+
+  <div class="detail-item">
+    <label>Tower Number</label>
+    <p><%= jsaData.tower_number || '—' %></p>
+  </div>
+
+  <div class="detail-item">
+    <label>Site Contact</label>
+    <p><%= jsaData.site_contact || '—' %></p>
+  </div>
+
+  <div class="detail-item">
+    <label>Site Contact Phone Number</label>
+    <p><%= jsaData.site_contact_phone || '—' %></p>
+  </div>
+
+  <div class="detail-item">
+    <label>Wind/Weather Forecast</label>
+    <p><%= jsaData.wind_weather_forecast || '—' %></p>
+  </div>
+
+  <div class="detail-item">
+    <label>Work Scope</label>
+    <div class="detail-content"><%= jsaData.work_scope || '—' %></div>
+  </div>
+</div>
+
+<% if (jsaData.hazards && jsaData.hazards.length > 0) { %>
+<div class="jsa-hazards-display">
+  <% jsaData.hazards.forEach(function(h, i) { %>
+    <div class="hazard-display-row">
+      <h4 class="hazard-row-label">Hazard <%= i + 1 %></h4>
+      <div class="form-row">
+        <div class="detail-item">
+          <label>Potential Hazards</label>
+          <p><%= h.potential_hazard || '—' %></p>
+        </div>
+        <div class="detail-item">
+          <label>Hazard Control Measures</label>
+          <p><%= h.control_measure || '—' %></p>
+        </div>
+      </div>
+    </div>
+  <% }); %>
+</div>
+<% } %>
+
+<div class="detail-item" style="margin-top:16px">
+  <label>Customer Email</label>
+  <p><%= submission.customer_email %></p>
+</div>

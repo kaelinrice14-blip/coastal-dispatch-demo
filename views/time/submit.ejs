@@ -1,0 +1,146 @@
+<%- include('../partials/header', { title, user }) %>
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Submit Time</h1>
+    <p class="page-subtitle">Add one or more entries, then submit for manager approval</p>
+  </div>
+</div>
+
+<%- include('../partials/time-nav', { user, activeTab }) %>
+
+<% if (error) { %>
+  <div class="alert alert-error"><%= error %></div>
+<% } %>
+
+<div class="split-layout time-submit-layout">
+  <div class="card">
+    <h2 class="list-heading">New Time Entry</h2>
+
+    <form method="POST" action="/time/entries" id="time-entry-form">
+      <div class="form-group">
+        <label for="entry_date">Date *</label>
+        <input type="date" id="entry_date" name="entry_date" class="form-control"
+               value="<%= typeof form !== 'undefined' && form.entry_date ? form.entry_date : entryDate %>" required>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Start Time *</label>
+          <%- include('../partials/time-wheel-picker', {
+            id: 'start_time',
+            name: 'start_time',
+            value: typeof form !== 'undefined' ? form.start_time : '08:00',
+            required: true
+          }) %>
+        </div>
+        <div class="form-group">
+          <label>End Time *</label>
+          <%- include('../partials/time-wheel-picker', {
+            id: 'end_time',
+            name: 'end_time',
+            value: typeof form !== 'undefined' ? form.end_time : '17:00',
+            required: true
+          }) %>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="total_hours">Total Hours</label>
+        <input type="number" id="total_hours" name="total_hours" class="form-control"
+               step="0.25" min="0" readonly
+               value="<%= typeof form !== 'undefined' ? form.total_hours : '' %>"
+               placeholder="Auto-calculated">
+        <p class="hint">Calculated automatically from start and end times.</p>
+      </div>
+
+      <div class="form-group">
+        <label for="site">Site / Wind Farm *</label>
+        <select id="site" name="site" class="form-control" required>
+          <option value="">— Select —</option>
+          <% sites.forEach(function(s) { %>
+            <option value="<%= s %>" <%= (typeof form !== 'undefined' && form.site === s) ? 'selected' : '' %>><%= s %></option>
+          <% }); %>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="state">State *</label>
+          <select id="state" name="state" class="form-control" required>
+            <option value="">— Select State —</option>
+            <% states.forEach(function(st) { %>
+              <option value="<%= st %>" <%= (typeof form !== 'undefined' && form.state === st) ? 'selected' : '' %>><%= st %></option>
+            <% }); %>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="hours_type">Type of Hours *</label>
+          <select id="hours_type" name="hours_type" class="form-control" required>
+            <option value="">— Select —</option>
+            <% hoursTypes.forEach(function(ht) { %>
+              <option value="<%= ht %>" <%= (typeof form !== 'undefined' && form.hours_type === ht) ? 'selected' : '' %>><%= ht %></option>
+            <% }); %>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="submission_id">Job Type / Form Reference</label>
+        <select id="submission_id" name="submission_id" class="form-control">
+          <option value="">— None —</option>
+          <% formRefs.forEach(function(ref) { %>
+            <option value="<%= ref.id %>" <%= (typeof form !== 'undefined' && String(form.submission_id) === String(ref.id)) ? 'selected' : '' %>>
+              <%= ref.label %>
+            </option>
+          <% }); %>
+        </select>
+        <p class="hint">Completed forms from the selected date appear here.</p>
+      </div>
+
+      <div class="form-group">
+        <label for="notes">Notes / Description</label>
+        <textarea id="notes" name="notes" class="form-control" rows="3"
+                  placeholder="Optional details about work performed..."><%= typeof form !== 'undefined' ? form.notes : '' %></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-primary">+ Add Entry</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2 class="list-heading">Entries to Submit (<%= drafts.length %>)</h2>
+
+    <% if (drafts.length === 0) { %>
+      <div class="empty-state" style="padding:24px">
+        <p class="text-muted">No entries added yet.</p>
+      </div>
+    <% } else { %>
+      <div class="time-draft-list">
+        <% drafts.forEach(function(e) { %>
+          <div class="time-draft-item">
+            <div>
+              <strong><%= e.entry_date %></strong> · <%= e.total_hours %>h
+              <br><span class="text-muted" style="font-size:0.8125rem"><%= e.site %> · <%= e.state || '—' %> · <%= e.hours_type || '—' %></span>
+              <br><span class="text-muted" style="font-size:0.8125rem"><%= e.start_time %>–<%= e.end_time %></span>
+              <% if (e.job_reference) { %><br><span class="text-muted" style="font-size:0.8125rem"><%= e.job_reference %></span><% } %>
+            </div>
+            <form method="POST" action="/time/entries/<%= e.id %>/delete">
+              <button type="submit" class="btn btn-outline btn-sm">Remove</button>
+            </form>
+          </div>
+        <% }); %>
+      </div>
+
+      <form method="POST" action="/time/submit" style="margin-top:20px">
+        <button type="submit" class="btn btn-success" style="width:100%">
+          Submit for Manager Approval (<%= drafts.length %>)
+        </button>
+      </form>
+    <% } %>
+  </div>
+</div>
+
+<script src="/js/time-wheel-picker.js"></script>
+<script src="/js/time-calc.js"></script>
+<%- include('../partials/footer') %>

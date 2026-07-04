@@ -1,0 +1,70 @@
+<% if (siteGroups.length === 0) { %>
+  <div class="empty-state" style="padding:32px"><p>No time entries in this category.</p></div>
+<% } else { %>
+  <% siteGroups.forEach(function(group) { %>
+    <section class="site-group">
+      <div class="site-group-header">
+        <div>
+          <h3 class="site-group-title"><%= group.site %></h3>
+          <p class="site-group-meta">
+            <%= group.entry_count %> <%= group.entry_count === 1 ? 'entry' : 'entries' %>
+            · <%= group.employee_count %> <%= group.employee_count === 1 ? 'employee' : 'employees' %>
+          </p>
+        </div>
+        <div class="site-group-total">
+          <span class="site-group-hours"><%= group.total_hours %>h</span>
+          <span class="site-group-hours-label">total hours</span>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Employee</th>
+              <th>Date</th>
+              <th>Hours</th>
+              <th>State</th>
+              <th>Hours Type</th>
+              <th>Time</th>
+              <% if (typeof showStatus !== 'undefined' && showStatus) { %><th>Status</th><% } %>
+              <% if (typeof showApproved !== 'undefined' && showApproved) { %><th>Approved</th><% } %>
+              <% if (typeof showJobRef !== 'undefined' && showJobRef) { %><th>Job Ref</th><% } %>
+              <% if (typeof showActions !== 'undefined' && showActions) { %><th></th><% } %>
+            </tr>
+          </thead>
+          <tbody>
+            <% group.entries.forEach(function(e) { %>
+            <tr>
+              <td><strong><%= e.employee_name %></strong></td>
+              <td><%= e.entry_date %></td>
+              <td><strong><%= e.total_hours %>h</strong></td>
+              <td><%= e.state || '—' %></td>
+              <td><%= e.hours_type || '—' %></td>
+              <td style="font-size:0.8125rem"><%= e.start_time %> – <%= e.end_time %></td>
+              <% if (typeof showStatus !== 'undefined' && showStatus) { %>
+                <td><span class="badge badge-<%= e.status %>"><%= e.status %></span></td>
+              <% } %>
+              <% if (typeof showApproved !== 'undefined' && showApproved) { %>
+                <td style="font-size:0.8125rem;color:var(--text-muted)"><%= e.reviewed_at || '—' %></td>
+              <% } %>
+              <% if (typeof showJobRef !== 'undefined' && showJobRef) { %>
+                <td style="font-size:0.8125rem"><%= e.job_reference || '—' %></td>
+              <% } %>
+              <% if (typeof showActions !== 'undefined' && showActions) { %>
+                <td>
+                  <% if (e.status === 'pending') { %>
+                    <a href="/manager/time/entries/<%= e.id %>" class="btn btn-primary btn-sm">Review</a>
+                  <% } else { %>
+                    <a href="/manager/time/entries/<%= e.id %>" class="btn btn-outline btn-sm">View</a>
+                  <% } %>
+                </td>
+              <% } %>
+            </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  <% }); %>
+<% } %>

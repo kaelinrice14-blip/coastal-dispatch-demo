@@ -1,0 +1,42 @@
+<%- include('../partials/header', { title, user }) %>
+
+<div class="page-header">
+  <div>
+    <p class="breadcrumb">
+      <a href="/employee">All Forms</a> /
+      <a href="/employee/forms/<%= submission.form_id %>"><%= submission.form_name %></a>
+    </p>
+    <h1 class="page-title"><%= isJsa ? 'View JSA' : (isDi || isBir || isBrr) ? ('View ' + submission.form_name) : 'View Submission' %></h1>
+  </div>
+  <span class="badge badge-<%= submission.status %>"><%= submission.status %></span>
+</div>
+
+<div class="card">
+  <% if (isJsa) { %>
+    <%- include('../partials/jsa-display', { submission, jsaData }) %>
+  <% } else if (isDi) { %>
+    <%- include('../partials/daily-inspection-display', { submission, diData, photos, liftQuestions, shutdownItems, acknowledgementText }) %>
+  <% } else if (isBir) { %>
+    <%- include('../partials/blade-inspection-display', { submission, birData, photos }) %>
+  <% } else if (isBrr) { %>
+    <%- include('../partials/blade-repair-display', { submission, birData, photos, laminationStages: typeof laminationStages !== 'undefined' ? laminationStages : [] }) %>
+  <% } else { %>
+    <%- include('../partials/submission-detail', { submission, values, photos }) %>
+  <% } %>
+
+  <% if (submission.manager_notes) { %>
+  <div class="detail-item" style="margin-top:16px">
+    <label>Manager Notes</label>
+    <div class="detail-content"><%= submission.manager_notes %></div>
+  </div>
+  <% } %>
+
+  <div class="review-actions">
+    <% if (canEdit) { %>
+      <a href="/employee/submissions/<%= submission.id %>/edit" class="btn btn-primary">Edit</a>
+    <% } %>
+    <a href="/employee/forms/<%= submission.form_id %>" class="btn btn-outline">Back to List</a>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

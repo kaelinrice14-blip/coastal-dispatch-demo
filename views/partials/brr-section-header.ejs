@@ -1,0 +1,8 @@
+<div class="brr-section-header">
+  <h2 class="brr-section-title"><%= title %></h2>
+  <label class="checkbox-label brr-na-toggle">
+    <input type="checkbox" name="section_na_<%= sectionKey %>" value="1"
+           class="section-na-checkbox" data-section="<%= sectionKey %>"
+           <%= data.section_na[sectionKey] ? 'checked' : '' %>> N/A
+  </label>
+</div>

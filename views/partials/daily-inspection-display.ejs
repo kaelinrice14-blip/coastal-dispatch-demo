@@ -1,0 +1,71 @@
+<h2 class="di-form-title"><%= submission.form_name %></h2>
+
+<h3 class="di-section-title">Section 1: Daily Inspection</h3>
+<div class="detail-grid">
+  <div class="detail-item">
+    <label>Inspector's Name</label>
+    <p><%= diData.inspector_name || '—' %></p>
+  </div>
+  <div class="detail-item">
+    <label>Date/Time of Inspection</label>
+    <p><%= diData.inspection_datetime || '—' %></p>
+  </div>
+  <div class="detail-item">
+    <label>Site</label>
+    <p><%= diData.site || '—' %></p>
+  </div>
+  <div class="detail-item">
+    <label>Tower Number</label>
+    <p><%= diData.tower_number || '—' %></p>
+  </div>
+  <div class="detail-item">
+    <label>Type of Lift</label>
+    <p><%= diData.lift_type || '—' %></p>
+  </div>
+</div>
+
+<h3 class="di-section-title">Section 2: Lift Inspection</h3>
+<div class="yn-display-list">
+  <% liftQuestions.forEach(function(q) { %>
+    <div class="yn-display-row">
+      <span><%= q.label %></span>
+      <span class="yn-answer badge <%= diData.lift_inspection[q.key] === 'yes' ? 'badge-approved' : 'badge-rejected' %>">
+        <%= diData.lift_inspection[q.key] || '—' %>
+      </span>
+    </div>
+  <% }); %>
+</div>
+
+<h3 class="di-section-title">Section 3: Driver Side Setup</h3>
+<% if (photos.driver) { %>
+  <img src="/uploads/<%= photos.driver.filename %>" alt="Driver side" class="di-photo">
+<% } else { %>
+  <p class="text-muted">No photo uploaded.</p>
+<% } %>
+
+<h3 class="di-section-title">Section 4: Passenger Side Setup</h3>
+<% if (photos.passenger) { %>
+  <img src="/uploads/<%= photos.passenger.filename %>" alt="Passenger side" class="di-photo">
+<% } else { %>
+  <p class="text-muted">No photo uploaded.</p>
+<% } %>
+
+<h3 class="di-section-title">Section 5: Shutdown Checklist</h3>
+<ul class="shutdown-display-list">
+  <% shutdownItems.forEach(function(item) { %>
+    <li class="<%= diData.shutdown_checklist[item.key] ? 'checked' : 'unchecked' %>">
+      <%= diData.shutdown_checklist[item.key] ? '✓' : '✗' %> <%= item.label %>
+    </li>
+  <% }); %>
+</ul>
+
+<h3 class="di-section-title">Section 6: Acknowledgement</h3>
+<p class="acknowledgement-text"><%= acknowledgementText %></p>
+<% if (diData.signature) { %>
+  <img src="<%= diData.signature %>" alt="Signature" class="signature-display">
+<% } %>
+
+<div class="detail-item" style="margin-top:16px">
+  <label>Customer Email</label>
+  <p><%= submission.customer_email %></p>
+</div>
