@@ -4,7 +4,7 @@
   "description": "Coastal Dispatch — work logs, forms, time tracking, and team chat",
   "main": "server.js",
   "engines": {
-    "node": ">=18"
+    "node": "20"
   },
   "scripts": {
     "start": "node server.js",
