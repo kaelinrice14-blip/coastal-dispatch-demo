@@ -1,3 +1,5 @@
+# Railpack is required for better-sqlite3 (native node-gyp compilation).
+# Do not use Nixpacks — it lacks the Python/build toolchain.
 [build]
 builder = "RAILPACK"
 
